@@ -1,0 +1,271 @@
+@media (max-width: 860px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  body {
+    background: #f5f5f7;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: .65rem .75rem .55rem;
+    gap: .55rem;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+
+  .brand {
+    font-size: .95rem;
+  }
+
+  .nav {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: .35rem;
+    padding-bottom: .2rem;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav a {
+    flex: 0 0 auto;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.06);
+    font-size: .82rem;
+    line-height: 1;
+    padding: .55rem .7rem;
+  }
+
+  .page {
+    width: 100%;
+    padding: .75rem .55rem 3rem;
+  }
+
+  .panel {
+    margin-top: .65rem;
+    padding: 1rem;
+    border-radius: 22px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 2rem 1rem;
+    text-align: left;
+    place-items: start;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 18vw, 5.2rem);
+    line-height: .9;
+    letter-spacing: -.08em;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 11vw, 3.2rem);
+    line-height: .95;
+  }
+
+  .intro,
+  .section-heading p {
+    margin-left: 0;
+    margin-right: 0;
+    font-size: .98rem;
+  }
+
+  .section-heading.compact {
+    text-align: left;
+  }
+
+  .dashboard-grid,
+  .timeline-grid,
+  .comparison-grid,
+  .method-grid,
+  .rules-grid {
+    grid-template-columns: 1fr !important;
+    gap: .7rem;
+  }
+
+  .chart-card,
+  .data-card,
+  .method-card,
+  .callout {
+    padding: .85rem;
+    border-radius: 18px;
+  }
+
+  .chart-card {
+    min-height: auto;
+  }
+
+  .chart-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .6rem;
+    padding: .65rem;
+    border-radius: 18px;
+  }
+
+  .chart-toolbar div {
+    width: 100%;
+  }
+
+  select {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .echart-donut {
+    height: 300px;
+    min-height: 280px;
+  }
+
+  .line-chart {
+    min-height: 210px;
+  }
+
+  .source-note {
+    font-size: .78rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .table-wrap {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  table,
+  thead,
+  tbody,
+  tfoot,
+  tr,
+  th,
+  td {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr,
+  tfoot tr {
+    margin-bottom: .65rem;
+    padding: .75rem;
+    border: 1px solid #d2d2d7;
+    border-radius: 16px;
+    background: #fff;
+  }
+
+  tbody tr:hover {
+    background: #fff;
+  }
+
+  th,
+  td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .42rem 0;
+    border-bottom: 1px solid #ececf0;
+    white-space: normal;
+    font-size: .9rem;
+  }
+
+  td:last-child,
+  th:last-child {
+    border-bottom: 0;
+  }
+
+  td::before,
+  th::before {
+    content: attr(data-label);
+    max-width: 45%;
+    color: #6e6e73;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  #targetTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
+  #targetTable tbody td:nth-child(2)::before { content: 'Prozent'; }
+  #targetTable tbody td:nth-child(3)::before { content: 'Korridor'; }
+  #targetTable tbody td:nth-child(4)::before { content: 'Anzahl'; }
+  #targetTable tbody td:nth-child(5)::before { content: 'Funktion'; }
+
+  #bgTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
+  #bgTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }
+  #bgTable tbody td:nth-child(3)::before { content: 'Anteil'; }
+  #bgTable tbody td:nth-child(4)::before { content: 'Soll'; }
+  #bgTable tbody td:nth-child(5)::before { content: 'Differenz'; }
+  #bgTable tbody td:nth-child(6)::before { content: 'Hinweis'; }
+  #bgTable tfoot th:nth-child(1)::before { content: 'Total'; }
+  #bgTable tfoot th:nth-child(2)::before { content: 'Wohnungen'; }
+  #bgTable tfoot th:nth-child(3)::before { content: 'Anteil'; }
+  #bgTable tfoot th:nth-child(4)::before { content: 'Soll'; }
+  #bgTable tfoot th:nth-child(5)::before { content: 'Differenz'; }
+  #bgTable tfoot th:nth-child(6)::before { content: 'Hinweis'; }
+
+  #historyTable tbody td:nth-child(1)::before { content: 'Jahr'; }
+  #historyTable tbody td:nth-child(2)::before { content: 'Total'; }
+  #historyTable tbody td:nth-child(3)::before { content: 'Veränderung'; }
+
+  #cityTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
+  #cityTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }
+  #cityTable tbody td:nth-child(3)::before { content: 'Anteil'; }
+  #cityTable tbody td:nth-child(4)::before { content: 'Jahr'; }
+
+  #cantonTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
+  #cantonTable tbody td:nth-child(2)::before { content: 'Anteil'; }
+
+  #swissTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
+  #swissTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }
+  #swissTable tbody td:nth-child(3)::before { content: 'Anteil'; }
+
+  .wide-table table {
+    min-width: 0;
+  }
+
+  .rules-grid table tbody td:nth-child(1)::before { content: 'Personen'; }
+  .rules-grid table tbody td:nth-child(2)::before { content: 'Grösse'; }
+  .rules-grid table tbody td:nth-child(3)::before { content: 'Grenze'; }
+
+  .echart-donut {
+    height: 280px;
+    min-height: 260px;
+  }
+
+  .callout {
+    font-size: .92rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .page {
+    padding-left: .4rem;
+    padding-right: .4rem;
+  }
+
+  .panel {
+    padding: .8rem;
+    border-radius: 18px;
+  }
+
+  .echart-donut {
+    height: 250px;
+    min-height: 240px;
+  }
+
+  h1 {
+    font-size: clamp(2.7rem, 18vw, 4.4rem);
+  }
+}
