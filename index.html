@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WoRaster | Wohnungsraster BG</title>
-  <meta name="description" content="Einseitige Informationsseite zum Wohnungsraster der BG mit Soll-Vorschlag, Bestand, Entwicklung und Vergleichsdaten.">
+  <meta name="description" content="Kompakte Informationsseite zum Wohnungsraster der BG mit Soll, Bestand, Entwicklung und Vergleichsdaten.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,129 +14,149 @@
   <header class="site-header">
     <a class="brand" href="#top">WoRaster</a>
     <nav class="nav" aria-label="Seitennavigation">
-      <a href="#vorschlag">Vorschlag</a>
+      <a href="#vorschlag">Soll</a>
       <a href="#bestand">Bestand BG</a>
       <a href="#entwicklung">Entwicklung</a>
       <a href="#vergleich">Vergleich</a>
-      <a href="#quellen">Quellen</a>
+      <a href="#methodik">Methodik</a>
     </nav>
   </header>
 
   <main class="page" id="top">
-    <section class="hero panel hero-grid">
-      <div>
-        <p class="eyebrow">Wohnungsspiegel · Raster · Entwicklung · Vergleich</p>
-        <h1>Wohnungsraster für einen zukunftsfähigen Bestand der BG</h1>
-        <p class="intro">Diese Seite trennt zwischen <strong>Soll-Vorschlag</strong>, <strong>Ist-Bestand</strong>, <strong>Entwicklung</strong> und <strong>Vergleichsdaten</strong>. Der vorgeschlagene Raster ist eine fachliche Ableitung, kein amtlicher Zielwert.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="#vorschlag">Soll ansehen</a>
-          <a class="button secondary" href="#entwicklung">Entwicklung ansehen</a>
-        </div>
-      </div>
-      <aside class="summary-card" aria-label="Kernaussage">
-        <span class="label">Kernaussage</span>
-        <p>Der Bestand sollte interne Wechsel erleichtern: mehr 2–2.5-Zimmer-Wohnungen, ein robuster Familienblock bei 4–4.5 Zimmern und weniger einseitige Konzentration auf 3–3.5 Zimmer.</p>
-      </aside>
+    <section class="hero panel">
+      <p class="eyebrow">Wohnungsspiegel · Raster · Vergleich</p>
+      <h1>Wohnungsraster BG</h1>
+      <p class="intro">Kompakte Grundlage für einen künftigen Wohnungsmix: Soll-Vorschlag, Ist-Bestand, Entwicklung Stadt Zürich und Vergleich mit Kanton und Schweiz.</p>
     </section>
 
-    <section class="panel" id="vorschlag">
-      <div class="section-heading">
-        <p class="eyebrow">Soll</p>
-        <h2>Vorschlag für einen zukunftsfähigen Wohnungsraster</h2>
-        <p>Der Soll-Raster verbindet drei Ziele: Mobilität innerhalb der BG, genügend Familienwohnungen und kleinere Wohnungen für Verkleinerung nach Haushaltsveränderungen oder im Alter.</p>
+    <section class="panel dashboard" id="vorschlag">
+      <div class="section-heading compact">
+        <p class="eyebrow">Diagramm</p>
+        <h2>Wohnungsmix vergleichen</h2>
+        <p>Das Diagramm kann zwischen Soll, BG-Bestand und Vergleichsdaten umgeschaltet werden.</p>
       </div>
-      <div class="two-col">
-        <figure class="chart-card"><div class="pie" id="targetPie" role="img" aria-label="Tortendiagramm Zielmix"></div><figcaption>Empfohlener Zielmix. Eigene Ableitung, kein offizieller Soll-Wert.</figcaption></figure>
-        <div class="data-card"><h3>Zielwerte nach Zimmerzahl</h3><div class="table-wrap"><table id="targetTable"><thead><tr><th>Anzahl Zimmer</th><th>Prozent</th><th>Zielkorridor</th><th>Zielanzahl bei 394 Wohnungen</th><th>Funktion</th></tr></thead><tbody></tbody></table></div></div>
+
+      <div class="dashboard-grid">
+        <div class="chart-card apple-card">
+          <div class="chart-toolbar">
+            <label for="chartSelect">Thema</label>
+            <select id="chartSelect">
+              <option value="target">Soll-Vorschlag</option>
+              <option value="bg">Bestand BG</option>
+              <option value="city">Stadt Zürich</option>
+              <option value="canton">Kanton Zürich</option>
+              <option value="swiss">Schweiz</option>
+            </select>
+          </div>
+          <div class="pie" id="mainPie" role="img" aria-label="Tortendiagramm Wohnungsmix"></div>
+          <p class="source-note" id="chartSource">Quelle: eigene Ableitung aus BG-Bestand und Vergleichsdaten.</p>
+        </div>
+
+        <div class="data-card apple-card">
+          <h3>Vorschlag Soll-Raster</h3>
+          <div class="table-wrap wide-table"><table id="targetTable"><thead><tr><th>Anzahl Zimmer</th><th>Prozent</th><th>Zielkorridor</th><th>Zielanzahl bei 394 Wohnungen</th><th>Funktion</th></tr></thead><tbody></tbody></table></div>
+          <p class="source-note">Quelle: eigene fachliche Ableitung. Grundlage: interner Mobilitätsbedarf, Familienwohnungen, Verkleinerungsoptionen und Vergleich mit offiziellen Wohnungsbestandsdaten.</p>
+        </div>
       </div>
     </section>
 
     <section class="panel" id="bestand">
-      <div class="section-heading"><p class="eyebrow">Ist</p><h2>Bestand Genossenschaft</h2><p>Der interne aktuelle Bestand kann später hier eingesetzt werden. Bis dahin zeigt die Seite den zuletzt öffentlich sauber rekonstruierbaren Referenzstand der BG.</p></div>
-      <div class="two-col reverse">
-        <div class="data-card"><h3>Öffentlich verfügbarer Bestand der BG</h3><div class="table-wrap"><table id="bgTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil</th><th>Soll</th><th>Differenz zum Soll</th></tr></thead><tbody></tbody><tfoot><tr><th>Total</th><th>394</th><th>100 %</th><th>100 %</th><th>–</th></tr></tfoot></table></div><p class="source-note">Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Prozentanteile eigene Berechnung.</p></div>
-        <figure class="chart-card"><div class="pie" id="bgPie" role="img" aria-label="Tortendiagramm Bestand BG"></div><figcaption>Ist-Bestand der BG als Referenzstand.</figcaption></figure>
+      <div class="section-heading compact"><p class="eyebrow">Ist</p><h2>Bestand Genossenschaft</h2><p>Dieser Block ist bewusst breit angelegt, damit später weitere interne Spalten ergänzt werden können.</p></div>
+      <div class="data-card apple-card full-width-card">
+        <h3>Öffentlich verfügbarer Bestand der BG</h3>
+        <div class="table-wrap wide-table"><table id="bgTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil</th><th>Soll</th><th>Differenz zum Soll</th><th>Hinweis</th></tr></thead><tbody></tbody><tfoot><tr><th>Total</th><th>394</th><th>100 %</th><th>100 %</th><th>–</th><th>Referenzbestand</th></tr></tfoot></table></div>
+        <p class="source-note">Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Prozentanteile und Differenzen eigene Berechnung. Die Genossenschaft wird auf dieser Seite nur als BG bezeichnet.</p>
       </div>
-      <div class="callout"><strong>Lesart:</strong> Die grösste Abweichung liegt nicht bei den grossen Wohnungen, sondern bei der Verteilung zwischen 2–2.5 und 3–3.5 Zimmern. Für interne Mobilität fehlen kleine, gut nutzbare Wohnungen.</div>
+      <div class="callout slim"><strong>Interpretation:</strong> Auffällig ist die starke Konzentration auf 3–3.5 Zimmer und der geringe Anteil 2–2.5 Zimmer. Für interne Wechsel und altersgerechte Verkleinerung ist dieses Segment entscheidend.</div>
     </section>
 
     <section class="panel" id="entwicklung">
-      <div class="section-heading">
-        <p class="eyebrow">Entwicklung</p>
-        <h2>Entwicklung Wohnungsbestand Stadt Zürich</h2>
-        <p>Die Zeitreihe wird aus der offiziellen Stadt-Zürich-Wohnungsbestand-Quelle gelesen. Sie zeigt, ob der Gesamtbestand und die Zimmerstruktur über die Jahre eher wachsen, stagnieren oder sich verschieben.</p>
-      </div>
+      <div class="section-heading compact"><p class="eyebrow">Entwicklung</p><h2>Wohnungsbestand Stadt Zürich</h2><p>Zeitreihe aus der offiziellen Open-Data-Quelle der Stadt Zürich.</p></div>
       <div class="timeline-grid">
-        <div class="data-card">
-          <h3>Gesamtbestand nach Jahr</h3>
-          <div id="historyChart" class="line-chart" role="img" aria-label="Zeitreihe Wohnungsbestand Stadt Zürich">Daten werden geladen…</div>
-        </div>
-        <div class="data-card">
-          <h3>Letzte Jahre</h3>
-          <div class="table-wrap"><table id="historyTable"><thead><tr><th>Jahr</th><th>Wohnungen total</th><th>Veränderung</th></tr></thead><tbody><tr><td colspan="3">Daten werden geladen…</td></tr></tbody></table></div>
-        </div>
+        <div class="data-card apple-card"><h3>Gesamtbestand nach Jahr</h3><div id="historyChart" class="line-chart" role="img" aria-label="Zeitreihe Wohnungsbestand Stadt Zürich">Daten werden geladen…</div><p class="source-note">Quelle: Stadt Zürich, Open Data, BAU506OD5062.csv; Kontextseite Wohnungsbestand Stadt Zürich.</p></div>
+        <div class="data-card apple-card"><h3>Letzte Jahre</h3><div class="table-wrap"><table id="historyTable"><thead><tr><th>Jahr</th><th>Wohnungen total</th><th>Veränderung</th></tr></thead><tbody><tr><td colspan="3">Daten werden geladen…</td></tr></tbody></table></div><p class="source-note">Quelle: Stadt Zürich, Open Data, BAU506OD5062.csv. Veränderung: eigene Berechnung gegenüber Vorjahr.</p></div>
       </div>
-      <p class="source-note">Quelle: Stadt Zürich, Statistik und Daten, Wohnungsbestand; Open Data BAU506OD5062.csv.</p>
     </section>
 
     <section class="panel" id="vergleich">
-      <div class="section-heading"><p class="eyebrow">Vergleich</p><h2>Wohnungsbestand Stadt Zürich, Kanton Zürich und Schweiz</h2><p>Die Vergleichsdaten dienen nicht als 1:1-Vorgabe. Sie zeigen, wie stark der BG-Bestand vom Umfeld abweicht und wo ein genossenschaftlicher Raster bewusst anders gewichten sollte.</p></div>
-      <article class="comparison-block">
-        <h3>Wohnungsbestand Stadt Zürich</h3>
-        <p>Die Tabelle wird direkt aus dem offiziellen Open-Data-CSV der Stadt Zürich gelesen. Falls der Browser die Quelle blockiert, bleibt die Quellenangabe sichtbar.</p>
-        <div class="table-wrap"><table id="cityTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil</th><th>Datenjahr</th></tr></thead><tbody><tr><td colspan="4">Daten werden geladen…</td></tr></tbody></table></div>
-        <p class="source-note">Quelle: Stadt Zürich, Open Data, <a href="https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/resource/c35e10ef-f8a2-4d30-813b-f75ea69fc939" target="_blank" rel="noreferrer">BAU506OD5062.csv</a>; Kontextseite <a href="https://www.stadt-zuerich.ch/de/politik-und-verwaltung/statistik-und-daten/daten/bauen-und-wohnen/wohnungen/wohnungsbestand.html" target="_blank" rel="noreferrer">Wohnungsbestand Stadt Zürich</a>.</p>
-      </article>
-      <article class="comparison-grid">
-        <div class="data-card"><h3>Wohnungsbestand Kanton Zürich</h3><div class="table-wrap"><table id="cantonTable"><thead><tr><th>Anzahl Zimmer</th><th>Anteil Kanton Zürich</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: BFS, Wohnungen nach Anzahl Zimmer und Kanton, 2024; ergänzend Zürcher Gemeinden in Zahlen.</p></div>
-        <div class="data-card"><h3>Wohnungsbestand Schweiz</h3><div class="table-wrap"><table id="swissTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil Schweiz</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: BFS, Gebäude- und Wohnungsstatistik 2024 / Wohnungen nach Anzahl der Zimmer, 2024.</p></div>
-      </article>
-      <article class="comparison-block muted-block"><h3>Andere gemeinnützige Trägerschaften</h3><p>Für andere Genossenschaften gibt es keine einheitliche öffentliche Tabelle mit identischer Zimmerkategorie, Eigentumsart und Stichtagssystematik. Für die Argumentation ist deshalb sauberer, die BG mit offiziellen Stadt-, Kantons- und BFS-Daten zu vergleichen und genossenschaftliche Besonderheiten fachlich einzuordnen: interne Wechsel, Unterbelegung, Familienwohnungen und altersgerechte kleinere Einheiten.</p></article>
+      <div class="section-heading compact"><p class="eyebrow">Vergleich</p><h2>Offizielle Vergleichsdaten</h2><p>Die Vergleichstabellen sind Referenzen, keine direkten Zielvorgaben für die BG.</p></div>
+      <div class="comparison-grid first-wide">
+        <article class="data-card apple-card city-wide">
+          <h3>Wohnungsbestand Stadt Zürich</h3>
+          <div class="table-wrap"><table id="cityTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil</th><th>Datenjahr</th></tr></thead><tbody><tr><td colspan="4">Daten werden geladen…</td></tr></tbody></table></div>
+          <p class="source-note">Quelle: Stadt Zürich, Open Data, <a href="https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/resource/c35e10ef-f8a2-4d30-813b-f75ea69fc939" target="_blank" rel="noreferrer">BAU506OD5062.csv</a>; Kontext: <a href="https://www.stadt-zuerich.ch/de/politik-und-verwaltung/statistik-und-daten/daten/bauen-und-wohnen/wohnungen/wohnungsbestand.html" target="_blank" rel="noreferrer">Wohnungsbestand Stadt Zürich</a>. Anteile: eigene Berechnung aus geladenem CSV.</p>
+        </article>
+        <article class="data-card apple-card"><h3>Wohnungsbestand Kanton Zürich</h3><div class="table-wrap"><table id="cantonTable"><thead><tr><th>Anzahl Zimmer</th><th>Anteil Kanton Zürich</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: BFS, Wohnungen nach Anzahl Zimmer und Kanton, 2024; ergänzend Zürcher Gemeinden in Zahlen. Werte als Referenzanteile.</p></article>
+        <article class="data-card apple-card"><h3>Wohnungsbestand Schweiz</h3><div class="table-wrap"><table id="swissTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil Schweiz</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: BFS, Gebäude- und Wohnungsstatistik 2024, Wohnungen nach Anzahl der Zimmer. Werte gerundet.</p></article>
+      </div>
     </section>
 
     <section class="panel" id="methodik">
-      <div class="section-heading"><p class="eyebrow">Methodik</p><h2>Wie der Soll-Raster gelesen werden soll</h2></div>
-      <div class="method-grid"><div class="method-card"><span>01</span><h3>Kein kantonaler Durchschnitt</h3><p>Ein genossenschaftlicher Raster muss nicht den Kanton kopieren. Er muss den Zweck der BG abbilden.</p></div><div class="method-card"><span>02</span><h3>Mobilität im Bestand</h3><p>Kleine, gut nutzbare Wohnungen schaffen Optionen, damit grössere Wohnungen wieder passend belegt werden können.</p></div><div class="method-card"><span>03</span><h3>Familienblock sichern</h3><p>4–4.5-Zimmer-Wohnungen bleiben zentral, weil sie für Familien im gemeinnützigen Wohnungsbau besonders relevant sind.</p></div></div>
-    </section>
-
-    <section class="panel" id="quellen">
-      <div class="section-heading"><p class="eyebrow">Quellen</p><h2>Quellen und Datenstatus</h2></div>
-      <div class="source-list">
-        <div><h3>BG</h3><p>Öffentliches Liegenschaftenverzeichnis 2023 der BG; Geschäftsberichte und Vermietungsreglement als fachliche Einordnung. Auf der Seite wird die Genossenschaft nur als BG bezeichnet.</p></div>
-        <div><h3>Stadt Zürich</h3><p><a href="https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/resource/c35e10ef-f8a2-4d30-813b-f75ea69fc939" target="_blank" rel="noreferrer">Open Data: Anzahl Wohnungen nach Zimmerzahl und Jahr, BAU506OD5062.csv</a></p><p><a href="https://www.stadt-zuerich.ch/de/politik-und-verwaltung/statistik-und-daten/daten/bauen-und-wohnen/wohnungen/wohnungsbestand.html" target="_blank" rel="noreferrer">Wohnungsbestand Stadt Zürich</a></p></div>
-        <div><h3>Kanton Zürich</h3><p>BFS: Wohnungen nach Anzahl Zimmer und Kanton, 2024; Zürcher Gemeinden in Zahlen: Wohnungen nach Zimmerzahl.</p></div>
-        <div><h3>Schweiz</h3><p>BFS: Gebäude- und Wohnungsstatistik 2024; Wohnungen nach Anzahl der Zimmer, 2024; Housing-stat.ch als thematischer Einstieg.</p></div>
+      <div class="section-heading compact"><p class="eyebrow">Methodik</p><h2>Lesart</h2></div>
+      <div class="method-grid">
+        <div class="method-card apple-card"><span>01</span><h3>Nicht Durchschnitt kopieren</h3><p>Ein genossenschaftlicher Raster muss den Zweck der BG abbilden, nicht den Markt spiegeln.</p></div>
+        <div class="method-card apple-card"><span>02</span><h3>Interne Mobilität</h3><p>Kleinere Wohnungen ermöglichen Verkleinerung und machen grössere Wohnungen wieder passend verfügbar.</p></div>
+        <div class="method-card apple-card"><span>03</span><h3>Familien sichern</h3><p>4–4.5 Zimmer bleiben wichtig, müssen aber mit kleineren Einheiten ausbalanciert werden.</p></div>
       </div>
     </section>
   </main>
 
   <script>
-    const COLORS = ['#7fb7be', '#f2cc8f', '#a8dadc', '#b8c0ff', '#f4a261', '#cdb4db'];
+    const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
     const targetRows = [
-      { rooms: '1–1.5', percent: 4, corridor: '3–5 %', targetCount: 16, function: 'sehr kleine Einheiten, wenige gezielte Angebote' },
-      { rooms: '2–2.5', percent: 20, corridor: '18–22 %', targetCount: 79, function: 'Verkleinerung, ältere Personen, kleine Haushalte' },
-      { rooms: '3–3.5', percent: 44, corridor: '42–46 %', targetCount: 173, function: 'weiterhin Hauptsegment' },
-      { rooms: '4–4.5', percent: 24, corridor: '22–26 %', targetCount: 95, function: 'Kernsegment für Familien' },
-      { rooms: '5–5.5', percent: 7, corridor: '7–9 %', targetCount: 28, function: 'grössere Familien, Spezialfälle' },
-      { rooms: '6–6.5', percent: 1, corridor: '1–2 %', targetCount: 4, function: 'Ausnahmebestand' }
+      { rooms: '1–1.5', percent: 4, corridor: '3–5 %', targetCount: 16, function: 'gezielte kleine Einheiten', note: 'klein halten' },
+      { rooms: '2–2.5', percent: 20, corridor: '18–22 %', targetCount: 79, function: 'Verkleinerung, ältere Personen, kleine Haushalte', note: 'deutlich erhöhen' },
+      { rooms: '3–3.5', percent: 44, corridor: '42–46 %', targetCount: 173, function: 'Hauptsegment', note: 'reduzieren' },
+      { rooms: '4–4.5', percent: 24, corridor: '22–26 %', targetCount: 95, function: 'Familien', note: 'stärken' },
+      { rooms: '5–5.5', percent: 7, corridor: '7–9 %', targetCount: 28, function: 'grössere Familien', note: 'stabil' },
+      { rooms: '6–6.5', percent: 1, corridor: '1–2 %', targetCount: 4, function: 'Ausnahmebestand', note: 'Ausnahme' }
     ];
     const bgRows = [
       { rooms: '1–1.5', count: 9, percent: 2.3 }, { rooms: '2–2.5', count: 46, percent: 11.7 },
       { rooms: '3–3.5', count: 230, percent: 58.4 }, { rooms: '4–4.5', count: 70, percent: 17.8 },
       { rooms: '5–5.5', count: 37, percent: 9.4 }, { rooms: '6–6.5', count: 2, percent: 0.5 }
     ];
-    const cantonRows = [['1 Zimmer', '6.8 %'], ['2 Zimmer', '16.2 %'], ['3 Zimmer', '29.2 %'], ['4 Zimmer', '27.4 %'], ['5 Zimmer', '13.0 %'], ['6+ Zimmer', '7.4 %']];
-    const swissRows = [['1 Zimmer', "312'000", '6.4 %'], ['2 Zimmer', "678'000", '14.0 %'], ['3 Zimmer', "1'321'000", '27.3 %'], ['4 Zimmer', "1'341'000", '27.7 %'], ['5 Zimmer', "731'000", '15.1 %'], ['6+ Zimmer', "460'000", '9.5 %']];
+    const cantonRows = [['1 Zimmer', 6.8], ['2 Zimmer', 16.2], ['3 Zimmer', 29.2], ['4 Zimmer', 27.4], ['5 Zimmer', 13.0], ['6+ Zimmer', 7.4]];
+    const swissRows = [['1 Zimmer', "312'000", 6.4], ['2 Zimmer', "678'000", 14.0], ['3 Zimmer', "1'321'000", 27.3], ['4 Zimmer', "1'341'000", 27.7], ['5 Zimmer', "731'000", 15.1], ['6+ Zimmer', "460'000", 9.5]];
+    let cityChartRows = [];
 
-    function renderPie(id, rows, key = 'percent') {
-      const el = document.getElementById(id); let cursor = 0;
-      const parts = rows.map((row, i) => { const value = Number(row[key]); const start = cursor; cursor += value; return `${COLORS[i % COLORS.length]} ${start}% ${cursor}%`; });
-      el.style.background = `conic-gradient(${parts.join(', ')})`;
-      el.innerHTML = rows.map((row, i) => `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${row.rooms} · ${row[key]}%</span>`).join('');
+    const chartMeta = {
+      target: 'Quelle: eigene fachliche Ableitung. Kein amtlicher Sollwert.',
+      bg: 'Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.',
+      city: 'Quelle: Stadt Zürich Open Data BAU506OD5062.csv; Anteile eigene Berechnung.',
+      canton: 'Quelle: BFS / Kanton Zürich 2024; Werte als Referenzanteile.',
+      swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.'
+    };
+
+    function toPieRows(type) {
+      if (type === 'target') return targetRows.map(r => ({ label: r.rooms, percent: r.percent }));
+      if (type === 'bg') return bgRows.map(r => ({ label: r.rooms, percent: r.percent }));
+      if (type === 'city') return cityChartRows.length ? cityChartRows : [{ label: 'Daten laden', percent: 100 }];
+      if (type === 'canton') return cantonRows.map(r => ({ label: r[0], percent: r[1] }));
+      if (type === 'swiss') return swissRows.map(r => ({ label: r[0], percent: r[2] }));
+      return [];
     }
-    function renderTarget() { document.querySelector('#targetTable tbody').innerHTML = targetRows.map(r => `<tr><td>${r.rooms}</td><td>${r.percent} %</td><td>${r.corridor}</td><td>${r.targetCount}</td><td>${r.function}</td></tr>`).join(''); renderPie('targetPie', targetRows); }
-    function renderBg() { document.querySelector('#bgTable tbody').innerHTML = bgRows.map((r, i) => { const target = targetRows[i].percent; const diff = (r.percent - target).toFixed(1); const cls = diff > 0 ? 'positive' : 'negative'; return `<tr><td>${r.rooms}</td><td>${r.count}</td><td>${r.percent.toFixed(1)} %</td><td>${target} %</td><td class="${cls}">${diff > 0 ? '+' : ''}${diff} %-Punkte</td></tr>`; }).join(''); renderPie('bgPie', bgRows); }
-    function renderStaticTables() { document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join(''); document.querySelector('#swissTable tbody').innerHTML = swissRows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join(''); }
+
+    function renderMainPie(type = document.getElementById('chartSelect').value) {
+      const rows = toPieRows(type);
+      const el = document.getElementById('mainPie');
+      let cursor = 0;
+      const parts = rows.map((row, i) => { const start = cursor; cursor += Number(row.percent); return `${COLORS[i % COLORS.length]} ${start}% ${cursor}%`; });
+      el.style.background = `conic-gradient(${parts.join(', ')})`;
+      el.innerHTML = rows.map((row, i) => `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${row.label} · ${Number(row.percent).toFixed(1).replace('.0','')}%</span>`).join('');
+      document.getElementById('chartSource').textContent = chartMeta[type];
+    }
+
+    function renderTarget() {
+      document.querySelector('#targetTable tbody').innerHTML = targetRows.map(r => `<tr><td>${r.rooms}</td><td>${r.percent} %</td><td>${r.corridor}</td><td>${r.targetCount}</td><td>${r.function}</td></tr>`).join('');
+    }
+    function renderBg() {
+      document.querySelector('#bgTable tbody').innerHTML = bgRows.map((r, i) => { const target = targetRows[i].percent; const diff = (r.percent - target).toFixed(1); const cls = diff > 0 ? 'positive' : 'negative'; return `<tr><td>${r.rooms}</td><td>${r.count}</td><td>${r.percent.toFixed(1)} %</td><td>${target} %</td><td class="${cls}">${diff > 0 ? '+' : ''}${diff} %-Punkte</td><td>${targetRows[i].note}</td></tr>`; }).join('');
+    }
+    function renderStaticTables() {
+      document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map(r => `<tr><td>${r[0]}</td><td>${r[1].toFixed(1)} %</td></tr>`).join('');
+      document.querySelector('#swissTable tbody').innerHTML = swissRows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(1)} %</td></tr>`).join('');
+    }
     function parseCsv(text) { const delimiter = text.indexOf(';') > -1 ? ';' : ','; const lines = text.trim().split(/\r?\n/); const headers = lines.shift().split(delimiter).map(h => h.replace(/^"|"$/g, '')); return lines.map(line => { const cols = line.split(delimiter).map(c => c.replace(/^"|"$/g, '')); return Object.fromEntries(headers.map((h, i) => [h, cols[i]])); }); }
     function getYear(row) { return row.StichtagDatJahr || row.Jahr || row.STICHTAGDATJAHR || row.stichtagdatjahr; }
     function getCount(row) { return Number(String(row.AnzWhgStat || row.AnzWhg || row.Wohnungen || row.anzahl || '0').replace(/[^0-9.-]/g, '')); }
@@ -144,11 +164,11 @@
     function roomLabel(row) { return row.AnzZimmerLevel2Lang_noDM || row.AnzZimmerLevel2Cd_noDM || row.Zimmerzahl || row.anzzimmer || ''; }
     function renderHistory(yearTotals) {
       const rows = [...yearTotals.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
-      const recent = rows.slice(-8); const values = rows.map(r => r[1]); const min = Math.min(...values); const max = Math.max(...values); const w = 680, h = 260, p = 34;
+      const recent = rows.slice(-8); const values = rows.map(r => r[1]); const min = Math.min(...values); const max = Math.max(...values); const w = 760, h = 250, p = 34;
       const points = rows.map(([year, value], i) => { const x = p + (i / Math.max(rows.length - 1, 1)) * (w - p * 2); const y = h - p - ((value - min) / Math.max(max - min, 1)) * (h - p * 2); return { year, value, x, y }; });
       const poly = points.map(p => `${p.x},${p.y}`).join(' ');
-      document.getElementById('historyChart').innerHTML = `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${poly}" fill="none" stroke="#3d7f88" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#e7dfd2"/><line x1="${p}" y1="${p}" x2="${p}" y2="${h-p}" stroke="#e7dfd2"/>${points.map(pt => `<circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="#3d7f88"><title>${pt.year}: ${pt.value.toLocaleString('de-CH')}</title></circle>`).join('')}<text x="${p}" y="22" class="svg-label">${rows[0][0]}</text><text x="${w-p}" y="22" text-anchor="end" class="svg-label">${rows[rows.length-1][0]}</text></svg>`;
-      document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map(([year, value], i, arr) => { const previous = rows.find(r => Number(r[0]) === Number(year) - 1); const diff = previous ? value - previous[1] : null; return `<tr><td>${year}</td><td>${value.toLocaleString('de-CH')}</td><td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td></tr>`; }).join('');
+      document.getElementById('historyChart').innerHTML = `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${poly}" fill="none" stroke="#007aff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#e5e5ea"/><line x1="${p}" y1="${p}" x2="${p}" y2="${h-p}" stroke="#e5e5ea"/>${points.map(pt => `<circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="#007aff"><title>${pt.year}: ${pt.value.toLocaleString('de-CH')}</title></circle>`).join('')}<text x="${p}" y="22" class="svg-label">${rows[0][0]}</text><text x="${w-p}" y="22" text-anchor="end" class="svg-label">${rows[rows.length-1][0]}</text></svg>`;
+      document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map(([year, value]) => { const previous = rows.find(r => Number(r[0]) === Number(year) - 1); const diff = previous ? value - previous[1] : null; return `<tr><td>${year}</td><td>${value.toLocaleString('de-CH')}</td><td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td></tr>`; }).join('');
     }
     async function loadCityData() {
       const url = 'https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/download/BAU506OD5062.csv';
@@ -159,15 +179,17 @@
         const grouped = new Map(); const yearTotals = new Map();
         rows.forEach(r => { const y = getYear(r); const c = getCount(r); if (!y || !c) return; yearTotals.set(y, (yearTotals.get(y) || 0) + c); if (y === latest) { const key = groupCityRooms(roomLabel(r)); if (key) grouped.set(key, (grouped.get(key) || 0) + c); } });
         const total = [...grouped.values()].reduce((a, b) => a + b, 0); const order = ['1 Zimmer', '2 Zimmer', '3 Zimmer', '4 Zimmer', '5 Zimmer', '6+ Zimmer'];
-        cityBody.innerHTML = order.map(k => { const count = grouped.get(k) || 0; const percent = total ? ((count / total) * 100).toFixed(1) : '–'; return `<tr><td>${k}</td><td>${count.toLocaleString('de-CH')}</td><td>${percent} %</td><td>${latest}</td></tr>`; }).join('');
-        renderHistory(yearTotals);
+        cityChartRows = order.map(k => { const count = grouped.get(k) || 0; const percent = total ? ((count / total) * 100) : 0; return { label: k, percent, count }; });
+        cityBody.innerHTML = cityChartRows.map(r => `<tr><td>${r.label}</td><td>${r.count.toLocaleString('de-CH')}</td><td>${r.percent.toFixed(1)} %</td><td>${latest}</td></tr>`).join('');
+        renderHistory(yearTotals); if (document.getElementById('chartSelect').value === 'city') renderMainPie('city');
       } catch (error) {
         cityBody.innerHTML = `<tr><td colspan="4">Automatisches Laden nicht möglich. Bitte Tabelle direkt aus BAU506OD5062.csv übernehmen.</td></tr>`;
         document.getElementById('historyChart').textContent = 'Automatisches Laden nicht möglich. Quelle bitte direkt prüfen.';
         document.querySelector('#historyTable tbody').innerHTML = `<tr><td colspan="3">Keine Zeitreihe geladen.</td></tr>`;
       }
     }
-    renderTarget(); renderBg(); renderStaticTables(); loadCityData();
+    document.getElementById('chartSelect').addEventListener('change', e => renderMainPie(e.target.value));
+    renderTarget(); renderBg(); renderStaticTables(); renderMainPie('target'); loadCityData();
   </script>
 </body>
 </html>
