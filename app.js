@@ -1,4 +1,5 @@
 const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
+let donutChart;
 
 const targetRows = [
   { rooms: '1–1.5', percent: 4, corridor: '3–5 %', targetCount: 16, function: 'gezielte kleine Einheiten', note: 'klein halten' },
@@ -30,26 +31,92 @@ const chartMeta = {
   swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.'
 };
 
+const chartTitles = {
+  target: ['Soll', 'Vorschlag'],
+  bg: ['Ist', 'BG'],
+  city: ['Stadt', 'Zürich'],
+  canton: ['Kanton', 'Zürich'],
+  swiss: ['Schweiz', 'BFS']
+};
+
 function toPieRows(type) {
-  if (type === 'target') return targetRows.map(r => ({ label: r.rooms, percent: r.percent }));
-  if (type === 'bg') return bgRows.map(r => ({ label: r.rooms, percent: r.percent }));
-  if (type === 'city') return cityChartRows.length ? cityChartRows : [{ label: 'Daten laden', percent: 100 }];
-  if (type === 'canton') return cantonRows.map(r => ({ label: r[0], percent: r[1] }));
-  if (type === 'swiss') return swissRows.map(r => ({ label: r[0], percent: r[2] }));
+  if (type === 'target') return targetRows.map(r => ({ name: r.rooms, value: r.percent }));
+  if (type === 'bg') return bgRows.map(r => ({ name: r.rooms, value: r.percent }));
+  if (type === 'city') return cityChartRows.length ? cityChartRows.map(r => ({ name: r.label, value: r.percent })) : [{ name: 'Daten laden', value: 100 }];
+  if (type === 'canton') return cantonRows.map(r => ({ name: r[0], value: r[1] }));
+  if (type === 'swiss') return swissRows.map(r => ({ name: r[0], value: r[2] }));
   return [];
 }
 
-function renderMainPie(type = document.getElementById('chartSelect').value) {
-  const rows = toPieRows(type);
+function initDonutChart() {
   const el = document.getElementById('mainPie');
-  let cursor = 0;
-  const parts = rows.map((row, i) => {
-    const start = cursor;
-    cursor += Number(row.percent);
-    return `${COLORS[i % COLORS.length]} ${start}% ${cursor}%`;
-  });
-  el.style.background = `conic-gradient(${parts.join(', ')})`;
-  el.innerHTML = rows.map((row, i) => `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${row.label} · ${Number(row.percent).toFixed(1).replace('.0', '')}%</span>`).join('');
+  donutChart = echarts.init(el, null, { renderer: 'svg' });
+  window.addEventListener('resize', () => donutChart.resize());
+}
+
+function renderMainPie(type = document.getElementById('chartSelect').value) {
+  if (!donutChart) initDonutChart();
+  const rows = toPieRows(type);
+  const [line1, line2] = chartTitles[type] || ['', ''];
+
+  donutChart.setOption({
+    color: COLORS,
+    animationDuration: 650,
+    animationEasing: 'cubicOut',
+    tooltip: {
+      trigger: 'item',
+      borderWidth: 0,
+      backgroundColor: 'rgba(29,29,31,.92)',
+      textStyle: { color: '#fff', fontFamily: 'Inter, sans-serif' },
+      valueFormatter: value => `${Number(value).toFixed(1).replace('.0', '')}%`
+    },
+    legend: {
+      bottom: 0,
+      left: 'center',
+      itemWidth: 10,
+      itemHeight: 10,
+      icon: 'circle',
+      textStyle: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
+    },
+    graphic: [
+      { type: 'text', left: 'center', top: '42%', style: { text: line1, fill: '#1d1d1f', fontSize: 28, fontWeight: 800, fontFamily: 'Inter, sans-serif', textAlign: 'center' } },
+      { type: 'text', left: 'center', top: '52%', style: { text: line2, fill: '#6e6e73', fontSize: 14, fontWeight: 700, fontFamily: 'Inter, sans-serif', textAlign: 'center' } }
+    ],
+    series: [{
+      name: 'Wohnungsmix',
+      type: 'pie',
+      radius: ['54%', '78%'],
+      center: ['50%', '44%'],
+      avoidLabelOverlap: true,
+      padAngle: 3,
+      minAngle: 3,
+      itemStyle: {
+        borderRadius: 12,
+        borderColor: '#fbfbfd',
+        borderWidth: 4
+      },
+      label: {
+        show: true,
+        formatter: '{b}\n{d}%',
+        color: '#1d1d1f',
+        fontSize: 12,
+        fontWeight: 700,
+        fontFamily: 'Inter, sans-serif'
+      },
+      labelLine: {
+        length: 12,
+        length2: 8,
+        lineStyle: { color: '#d2d2d7' }
+      },
+      emphasis: {
+        scale: true,
+        scaleSize: 6,
+        itemStyle: { shadowBlur: 18, shadowColor: 'rgba(0,0,0,.16)' }
+      },
+      data: rows
+    }]
+  }, true);
+
   document.getElementById('chartSource').textContent = chartMeta[type];
 }
 
