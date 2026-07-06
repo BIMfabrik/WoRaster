@@ -124,8 +124,48 @@ function renderMainPie(type = document.getElementById('chartSelect').value) {
   document.getElementById('chartSource').textContent = source;
 }
 
+function recalculateTargetCounts() {
+  targetRows.forEach(row => {
+    row.targetCount = Math.round((row.percent / 100) * 394);
+  });
+}
+
 function renderTarget() {
-  document.querySelector('#targetTable tbody').innerHTML = targetRows.map(r => `<tr><td>${r.rooms}</td><td>${r.percent} %</td><td>${r.corridor}</td><td>${r.targetCount}</td><td>${r.function}</td></tr>`).join('');
+  document.querySelector('#targetTable tbody').innerHTML = targetRows.map((r, index) => `
+    <tr>
+      <td>${r.rooms}</td>
+      <td>
+        <label class="sr-only" for="target-percent-${index}">Prozent ${r.rooms}</label>
+        <div class="editable-cell editable-percent">
+          <input
+            id="target-percent-${index}"
+            class="cell-input"
+            type="number"
+            min="0"
+            max="100"
+            step="0.1"
+            value="${r.percent}"
+            data-field="percent"
+            data-index="${index}"
+          >
+          <span class="cell-suffix">%</span>
+        </div>
+      </td>
+      <td>
+        <label class="sr-only" for="target-corridor-${index}">Zielkorridor ${r.rooms}</label>
+        <input
+          id="target-corridor-${index}"
+          class="cell-input corridor-input"
+          type="text"
+          value="${r.corridor}"
+          data-field="corridor"
+          data-index="${index}"
+        >
+      </td>
+      <td>${r.targetCount}</td>
+      <td>${r.function}</td>
+    </tr>
+  `).join('');
 }
 
 function renderBg() {
@@ -140,6 +180,33 @@ function renderBg() {
 function renderStaticTables() {
   document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map(r => `<tr><td>${r[0]}</td><td>${r[1].toFixed(1)} %</td></tr>`).join('');
   document.querySelector('#swissTable tbody').innerHTML = swissRows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(1)} %</td></tr>`).join('');
+}
+
+function handleTargetTableInput(event) {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement)) return;
+  const index = Number(input.dataset.index);
+  const field = input.dataset.field;
+  if (!Number.isInteger(index) || !field || !targetRows[index]) return;
+
+  if (field === 'percent') {
+    const nextValue = Number(input.value);
+    if (Number.isNaN(nextValue)) return;
+    const clamped = Math.min(100, Math.max(0, nextValue));
+    targetRows[index].percent = clamped;
+    recalculateTargetCounts();
+    renderTarget();
+    renderBg();
+    renderMainPie();
+    const refreshed = document.getElementById(`target-percent-${index}`);
+    if (refreshed) refreshed.focus();
+    if (refreshed) refreshed.select();
+    return;
+  }
+
+  if (field === 'corridor') {
+    targetRows[index].corridor = input.value;
+  }
 }
 
 function parseCsv(text) {
@@ -228,6 +295,8 @@ async function loadCityData() {
 
 document.getElementById('chartSelect').addEventListener('change', () => renderMainPie());
 document.getElementById('compareSelect').addEventListener('change', () => renderMainPie());
+document.querySelector('#targetTable tbody').addEventListener('input', handleTargetTableInput);
+recalculateTargetCounts();
 renderTarget();
 renderBg();
 renderStaticTables();
