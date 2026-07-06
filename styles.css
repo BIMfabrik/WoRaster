@@ -1,0 +1,145 @@
+:root {
+  --bg: #f4efe6;
+  --paper: rgba(255, 252, 247, 0.78);
+  --text: #1f1a17;
+  --muted: #6b5e55;
+  --line: rgba(31, 26, 23, 0.12);
+  --accent: #cf5c36;
+  --accent-dark: #9f3f1f;
+  --shadow: 0 24px 80px rgba(67, 42, 18, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(207, 92, 54, 0.22), transparent 28%),
+    radial-gradient(circle at right, rgba(239, 194, 103, 0.24), transparent 24%),
+    linear-gradient(160deg, #f6f0e7 0%, #efe4d1 100%);
+}
+
+.page {
+  width: min(980px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 4rem 0 5rem;
+}
+
+.hero,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--paper);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  padding: 4rem;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  color: var(--accent-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(3rem, 10vw, 6rem);
+  line-height: 0.95;
+}
+
+.intro {
+  max-width: 34rem;
+  margin: 1.5rem 0 0;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.primary {
+  background: var(--accent);
+  color: #fffaf5;
+}
+
+.secondary {
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.panel {
+  margin-top: 1.5rem;
+  padding: 2rem;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.6rem;
+}
+
+.panel p,
+.panel li {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.panel ul {
+  padding-left: 1.1rem;
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .page {
+    width: min(100% - 1rem, 980px);
+    padding: 1rem 0 3rem;
+  }
+
+  .hero,
+  .panel {
+    border-radius: 22px;
+  }
+
+  .hero {
+    padding: 2rem 1.25rem;
+  }
+
+  .panel {
+    padding: 1.5rem 1.25rem;
+  }
+}
