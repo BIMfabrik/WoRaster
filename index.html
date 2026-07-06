@@ -28,7 +28,7 @@
     <section class="panel dashboard" id="vorschlag">
       <div class="section-heading compact"><p class="eyebrow">Diagramm</p><h2>Wohnungsmix vergleichen</h2><p>Das Diagramm kann zwischen Soll, BG-Bestand und Vergleichsdaten umgeschaltet werden.</p></div>
       <div class="dashboard-grid">
-        <div class="chart-card apple-card"><div class="chart-toolbar"><label for="chartSelect">Thema</label><select id="chartSelect"><option value="target">Soll-Vorschlag</option><option value="bg">Bestand BG</option><option value="city">Stadt Zürich</option><option value="canton">Kanton Zürich</option><option value="swiss">Schweiz</option></select></div><div class="pie" id="mainPie" role="img" aria-label="Tortendiagramm Wohnungsmix"></div><p class="source-note" id="chartSource"></p></div>
+        <div class="chart-card apple-card"><div class="chart-toolbar"><label for="chartSelect">Thema</label><select id="chartSelect"><option value="target">Soll-Vorschlag</option><option value="bg">Bestand BG</option><option value="city">Stadt Zürich</option><option value="canton">Kanton Zürich</option><option value="swiss">Schweiz</option></select></div><div class="echart-donut" id="mainPie" role="img" aria-label="Doughnut Chart Wohnungsmix"></div><p class="source-note" id="chartSource"></p></div>
         <div class="data-card apple-card"><h3>Vorschlag Soll-Raster</h3><div class="table-wrap wide-table"><table id="targetTable"><thead><tr><th>Anzahl Zimmer</th><th>Prozent</th><th>Zielkorridor</th><th>Zielanzahl bei 394 Wohnungen</th><th>Funktion</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: eigene fachliche Ableitung; Grundlage sind interner Mobilitätsbedarf, Familienwohnungen, Verkleinerungsoptionen und offizielle Vergleichsdaten.</p></div>
       </div>
     </section>
@@ -49,6 +49,7 @@
 
     <section class="panel" id="methodik"><div class="section-heading compact"><p class="eyebrow">Methodik</p><h2>Lesart</h2></div><div class="method-grid"><div class="method-card apple-card"><span>01</span><h3>Nicht Durchschnitt kopieren</h3><p>Ein genossenschaftlicher Raster muss den Zweck der BG abbilden, nicht den Markt spiegeln.</p></div><div class="method-card apple-card"><span>02</span><h3>Interne Mobilität</h3><p>Kleinere Wohnungen ermöglichen Verkleinerung und machen grössere Wohnungen wieder passend verfügbar.</p></div><div class="method-card apple-card"><span>03</span><h3>Familien sichern</h3><p>4–4.5 Zimmer bleiben wichtig, müssen aber mit kleineren Einheiten ausbalanciert werden.</p></div></div></section>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
