@@ -1,4 +1,5 @@
 const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
+const COMPARE_COLORS = ['#80bdff', '#8ee0a5', '#ffe680', '#ffc580', '#d7a8ef', '#ade3fc'];
 let donutChart;
 
 const targetRows = [
@@ -28,7 +29,8 @@ const chartMeta = {
   bg: 'Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.',
   city: 'Quelle: Stadt Zürich Open Data BAU506OD5062.csv; Anteile eigene Berechnung.',
   canton: 'Quelle: BFS / Kanton Zürich 2024; Werte als Referenzanteile.',
-  swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.'
+  swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.',
+  none: ''
 };
 
 const chartTitles = {
@@ -54,13 +56,46 @@ function initDonutChart() {
   window.addEventListener('resize', () => donutChart.resize());
 }
 
+function seriesForRing(name, data, radius, colors, labelShown) {
+  return {
+    name,
+    type: 'pie',
+    radius,
+    center: ['50%', '44%'],
+    avoidLabelOverlap: true,
+    padAngle: 3,
+    minAngle: 3,
+    color: colors,
+    itemStyle: { borderRadius: 12, borderColor: '#fbfbfd', borderWidth: 4 },
+    label: {
+      show: labelShown,
+      formatter: '{b}\n{d}%',
+      color: '#1d1d1f',
+      fontSize: 12,
+      fontWeight: 700,
+      fontFamily: 'Inter, sans-serif'
+    },
+    labelLine: { show: labelShown, length: 12, length2: 8, lineStyle: { color: '#d2d2d7' } },
+    emphasis: { scale: true, scaleSize: 6, itemStyle: { shadowBlur: 18, shadowColor: 'rgba(0,0,0,.16)' } },
+    data
+  };
+}
+
 function renderMainPie(type = document.getElementById('chartSelect').value) {
   if (!donutChart) initDonutChart();
-  const rows = toPieRows(type);
+  const compareType = document.getElementById('compareSelect').value;
+  const hasCompare = compareType !== 'none' && compareType !== type;
+  const mainRows = toPieRows(type);
+  const compareRows = hasCompare ? toPieRows(compareType) : [];
   const [line1, line2] = chartTitles[type] || ['', ''];
+  const series = hasCompare
+    ? [
+        seriesForRing(`Innen: ${line1} ${line2}`, mainRows, ['38%', '57%'], COLORS, false),
+        seriesForRing(`Aussen: ${(chartTitles[compareType] || [compareType, '']).join(' ')}`, compareRows, ['64%', '84%'], COMPARE_COLORS, true)
+      ]
+    : [seriesForRing(`${line1} ${line2}`, mainRows, ['54%', '78%'], COLORS, true)];
 
   donutChart.setOption({
-    color: COLORS,
     animationDuration: 650,
     animationEasing: 'cubicOut',
     tooltip: {
@@ -68,7 +103,7 @@ function renderMainPie(type = document.getElementById('chartSelect').value) {
       borderWidth: 0,
       backgroundColor: 'rgba(29,29,31,.92)',
       textStyle: { color: '#fff', fontFamily: 'Inter, sans-serif' },
-      valueFormatter: value => `${Number(value).toFixed(1).replace('.0', '')}%`
+      formatter: params => `${params.seriesName}<br>${params.marker}${params.name}: <b>${Number(params.value).toFixed(1).replace('.0', '')}%</b>`
     },
     legend: {
       bottom: 0,
@@ -79,45 +114,14 @@ function renderMainPie(type = document.getElementById('chartSelect').value) {
       textStyle: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
     },
     graphic: [
-      { type: 'text', left: 'center', top: '42%', style: { text: line1, fill: '#1d1d1f', fontSize: 28, fontWeight: 800, fontFamily: 'Inter, sans-serif', textAlign: 'center' } },
-      { type: 'text', left: 'center', top: '52%', style: { text: line2, fill: '#6e6e73', fontSize: 14, fontWeight: 700, fontFamily: 'Inter, sans-serif', textAlign: 'center' } }
+      { type: 'text', left: 'center', top: hasCompare ? '39%' : '42%', style: { text: line1, fill: '#1d1d1f', fontSize: 28, fontWeight: 800, fontFamily: 'Inter, sans-serif', textAlign: 'center' } },
+      { type: 'text', left: 'center', top: hasCompare ? '49%' : '52%', style: { text: line2, fill: '#6e6e73', fontSize: 14, fontWeight: 700, fontFamily: 'Inter, sans-serif', textAlign: 'center' } }
     ],
-    series: [{
-      name: 'Wohnungsmix',
-      type: 'pie',
-      radius: ['54%', '78%'],
-      center: ['50%', '44%'],
-      avoidLabelOverlap: true,
-      padAngle: 3,
-      minAngle: 3,
-      itemStyle: {
-        borderRadius: 12,
-        borderColor: '#fbfbfd',
-        borderWidth: 4
-      },
-      label: {
-        show: true,
-        formatter: '{b}\n{d}%',
-        color: '#1d1d1f',
-        fontSize: 12,
-        fontWeight: 700,
-        fontFamily: 'Inter, sans-serif'
-      },
-      labelLine: {
-        length: 12,
-        length2: 8,
-        lineStyle: { color: '#d2d2d7' }
-      },
-      emphasis: {
-        scale: true,
-        scaleSize: 6,
-        itemStyle: { shadowBlur: 18, shadowColor: 'rgba(0,0,0,.16)' }
-      },
-      data: rows
-    }]
+    series
   }, true);
 
-  document.getElementById('chartSource').textContent = chartMeta[type];
+  const source = hasCompare ? `${chartMeta[type]} Vergleich Aussenring: ${chartMeta[compareType]}` : chartMeta[type];
+  document.getElementById('chartSource').textContent = source;
 }
 
 function renderTarget() {
@@ -213,7 +217,8 @@ async function loadCityData() {
     });
     cityBody.innerHTML = cityChartRows.map(r => `<tr><td>${r.label}</td><td>${r.count.toLocaleString('de-CH')}</td><td>${r.percent.toFixed(1)} %</td><td>${latest}</td></tr>`).join('');
     renderHistory(yearTotals);
-    if (document.getElementById('chartSelect').value === 'city') renderMainPie('city');
+    const compareType = document.getElementById('compareSelect').value;
+    if (document.getElementById('chartSelect').value === 'city' || compareType === 'city') renderMainPie();
   } catch (error) {
     cityBody.innerHTML = `<tr><td colspan="4">Automatisches Laden nicht möglich. Bitte Tabelle direkt aus BAU506OD5062.csv übernehmen.</td></tr>`;
     document.getElementById('historyChart').textContent = 'Automatisches Laden nicht möglich. Quelle bitte direkt prüfen.';
@@ -221,7 +226,8 @@ async function loadCityData() {
   }
 }
 
-document.getElementById('chartSelect').addEventListener('change', e => renderMainPie(e.target.value));
+document.getElementById('chartSelect').addEventListener('change', () => renderMainPie());
+document.getElementById('compareSelect').addEventListener('change', () => renderMainPie());
 renderTarget();
 renderBg();
 renderStaticTables();
