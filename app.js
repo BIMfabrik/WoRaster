@@ -1,0 +1,162 @@
+const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
+
+const targetRows = [
+  { rooms: '1–1.5', percent: 4, corridor: '3–5 %', targetCount: 16, function: 'gezielte kleine Einheiten', note: 'klein halten' },
+  { rooms: '2–2.5', percent: 20, corridor: '18–22 %', targetCount: 79, function: 'Verkleinerung, ältere Personen, kleine Haushalte', note: 'deutlich erhöhen' },
+  { rooms: '3–3.5', percent: 44, corridor: '42–46 %', targetCount: 173, function: 'Hauptsegment', note: 'reduzieren' },
+  { rooms: '4–4.5', percent: 24, corridor: '22–26 %', targetCount: 95, function: 'Familien', note: 'stärken' },
+  { rooms: '5–5.5', percent: 7, corridor: '7–9 %', targetCount: 28, function: 'grössere Familien', note: 'stabil' },
+  { rooms: '6–6.5', percent: 1, corridor: '1–2 %', targetCount: 4, function: 'Ausnahmebestand', note: 'Ausnahme' }
+];
+
+const bgRows = [
+  { rooms: '1–1.5', count: 9, percent: 2.3 },
+  { rooms: '2–2.5', count: 46, percent: 11.7 },
+  { rooms: '3–3.5', count: 230, percent: 58.4 },
+  { rooms: '4–4.5', count: 70, percent: 17.8 },
+  { rooms: '5–5.5', count: 37, percent: 9.4 },
+  { rooms: '6–6.5', count: 2, percent: 0.5 }
+];
+
+const cantonRows = [['1 Zimmer', 6.8], ['2 Zimmer', 16.2], ['3 Zimmer', 29.2], ['4 Zimmer', 27.4], ['5 Zimmer', 13.0], ['6+ Zimmer', 7.4]];
+const swissRows = [['1 Zimmer', "312'000", 6.4], ['2 Zimmer', "678'000", 14.0], ['3 Zimmer', "1'321'000", 27.3], ['4 Zimmer', "1'341'000", 27.7], ['5 Zimmer', "731'000", 15.1], ['6+ Zimmer', "460'000", 9.5]];
+let cityChartRows = [];
+
+const chartMeta = {
+  target: 'Quelle: eigene fachliche Ableitung. Kein amtlicher Sollwert.',
+  bg: 'Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.',
+  city: 'Quelle: Stadt Zürich Open Data BAU506OD5062.csv; Anteile eigene Berechnung.',
+  canton: 'Quelle: BFS / Kanton Zürich 2024; Werte als Referenzanteile.',
+  swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.'
+};
+
+function toPieRows(type) {
+  if (type === 'target') return targetRows.map(r => ({ label: r.rooms, percent: r.percent }));
+  if (type === 'bg') return bgRows.map(r => ({ label: r.rooms, percent: r.percent }));
+  if (type === 'city') return cityChartRows.length ? cityChartRows : [{ label: 'Daten laden', percent: 100 }];
+  if (type === 'canton') return cantonRows.map(r => ({ label: r[0], percent: r[1] }));
+  if (type === 'swiss') return swissRows.map(r => ({ label: r[0], percent: r[2] }));
+  return [];
+}
+
+function renderMainPie(type = document.getElementById('chartSelect').value) {
+  const rows = toPieRows(type);
+  const el = document.getElementById('mainPie');
+  let cursor = 0;
+  const parts = rows.map((row, i) => {
+    const start = cursor;
+    cursor += Number(row.percent);
+    return `${COLORS[i % COLORS.length]} ${start}% ${cursor}%`;
+  });
+  el.style.background = `conic-gradient(${parts.join(', ')})`;
+  el.innerHTML = rows.map((row, i) => `<span><i style="background:${COLORS[i % COLORS.length]}"></i>${row.label} · ${Number(row.percent).toFixed(1).replace('.0', '')}%</span>`).join('');
+  document.getElementById('chartSource').textContent = chartMeta[type];
+}
+
+function renderTarget() {
+  document.querySelector('#targetTable tbody').innerHTML = targetRows.map(r => `<tr><td>${r.rooms}</td><td>${r.percent} %</td><td>${r.corridor}</td><td>${r.targetCount}</td><td>${r.function}</td></tr>`).join('');
+}
+
+function renderBg() {
+  document.querySelector('#bgTable tbody').innerHTML = bgRows.map((r, i) => {
+    const target = targetRows[i].percent;
+    const diff = (r.percent - target).toFixed(1);
+    const cls = diff > 0 ? 'positive' : 'negative';
+    return `<tr><td>${r.rooms}</td><td>${r.count}</td><td>${r.percent.toFixed(1)} %</td><td>${target} %</td><td class="${cls}">${diff > 0 ? '+' : ''}${diff} %-Punkte</td><td>${targetRows[i].note}</td></tr>`;
+  }).join('');
+}
+
+function renderStaticTables() {
+  document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map(r => `<tr><td>${r[0]}</td><td>${r[1].toFixed(1)} %</td></tr>`).join('');
+  document.querySelector('#swissTable tbody').innerHTML = swissRows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(1)} %</td></tr>`).join('');
+}
+
+function parseCsv(text) {
+  const delimiter = text.indexOf(';') > -1 ? ';' : ',';
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines.shift().split(delimiter).map(h => h.replace(/^"|"$/g, ''));
+  return lines.map(line => {
+    const cols = line.split(delimiter).map(c => c.replace(/^"|"$/g, ''));
+    return Object.fromEntries(headers.map((h, i) => [h, cols[i]]));
+  });
+}
+
+function getYear(row) { return row.StichtagDatJahr || row.Jahr || row.STICHTAGDATJAHR || row.stichtagdatjahr; }
+function getCount(row) { return Number(String(row.AnzWhgStat || row.AnzWhg || row.Wohnungen || row.anzahl || '0').replace(/[^0-9.-]/g, '')); }
+function roomLabel(row) { return row.AnzZimmerLevel2Lang_noDM || row.AnzZimmerLevel2Cd_noDM || row.Zimmerzahl || row.anzzimmer || ''; }
+function groupCityRooms(label) {
+  const text = String(label || '').toLowerCase();
+  if (text.includes('1')) return '1 Zimmer';
+  if (text.includes('2')) return '2 Zimmer';
+  if (text.includes('3')) return '3 Zimmer';
+  if (text.includes('4')) return '4 Zimmer';
+  if (text.includes('5')) return '5 Zimmer';
+  if (text.includes('6')) return '6+ Zimmer';
+  return null;
+}
+
+function renderHistory(yearTotals) {
+  const rows = [...yearTotals.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
+  const recent = rows.slice(-8);
+  const values = rows.map(r => r[1]);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const w = 760, h = 250, p = 34;
+  const points = rows.map(([year, value], i) => {
+    const x = p + (i / Math.max(rows.length - 1, 1)) * (w - p * 2);
+    const y = h - p - ((value - min) / Math.max(max - min, 1)) * (h - p * 2);
+    return { year, value, x, y };
+  });
+  const poly = points.map(p => `${p.x},${p.y}`).join(' ');
+  document.getElementById('historyChart').innerHTML = `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${poly}" fill="none" stroke="#007aff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#e5e5ea"/><line x1="${p}" y1="${p}" x2="${p}" y2="${h-p}" stroke="#e5e5ea"/>${points.map(pt => `<circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="#007aff"><title>${pt.year}: ${pt.value.toLocaleString('de-CH')}</title></circle>`).join('')}<text x="${p}" y="22" class="svg-label">${rows[0][0]}</text><text x="${w-p}" y="22" text-anchor="end" class="svg-label">${rows[rows.length-1][0]}</text></svg>`;
+  document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map(([year, value]) => {
+    const previous = rows.find(r => Number(r[0]) === Number(year) - 1);
+    const diff = previous ? value - previous[1] : null;
+    return `<tr><td>${year}</td><td>${value.toLocaleString('de-CH')}</td><td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td></tr>`;
+  }).join('');
+}
+
+async function loadCityData() {
+  const url = 'https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/download/BAU506OD5062.csv';
+  const cityBody = document.querySelector('#cityTable tbody');
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Quelle nicht erreichbar');
+    const rows = parseCsv(await res.text());
+    const years = [...new Set(rows.map(getYear).filter(Boolean))].sort();
+    const latest = years[years.length - 1];
+    const grouped = new Map();
+    const yearTotals = new Map();
+    rows.forEach(r => {
+      const y = getYear(r);
+      const c = getCount(r);
+      if (!y || !c) return;
+      yearTotals.set(y, (yearTotals.get(y) || 0) + c);
+      if (y === latest) {
+        const key = groupCityRooms(roomLabel(r));
+        if (key) grouped.set(key, (grouped.get(key) || 0) + c);
+      }
+    });
+    const total = [...grouped.values()].reduce((a, b) => a + b, 0);
+    const order = ['1 Zimmer', '2 Zimmer', '3 Zimmer', '4 Zimmer', '5 Zimmer', '6+ Zimmer'];
+    cityChartRows = order.map(k => {
+      const count = grouped.get(k) || 0;
+      const percent = total ? ((count / total) * 100) : 0;
+      return { label: k, percent, count };
+    });
+    cityBody.innerHTML = cityChartRows.map(r => `<tr><td>${r.label}</td><td>${r.count.toLocaleString('de-CH')}</td><td>${r.percent.toFixed(1)} %</td><td>${latest}</td></tr>`).join('');
+    renderHistory(yearTotals);
+    if (document.getElementById('chartSelect').value === 'city') renderMainPie('city');
+  } catch (error) {
+    cityBody.innerHTML = `<tr><td colspan="4">Automatisches Laden nicht möglich. Bitte Tabelle direkt aus BAU506OD5062.csv übernehmen.</td></tr>`;
+    document.getElementById('historyChart').textContent = 'Automatisches Laden nicht möglich. Quelle bitte direkt prüfen.';
+    document.querySelector('#historyTable tbody').innerHTML = `<tr><td colspan="3">Keine Zeitreihe geladen.</td></tr>`;
+  }
+}
+
+document.getElementById('chartSelect').addEventListener('change', e => renderMainPie(e.target.value));
+renderTarget();
+renderBg();
+renderStaticTables();
+renderMainPie('target');
+loadCityData();
