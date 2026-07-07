@@ -1,8 +1,9 @@
+const STORAGE_KEY = 'woraster-target-state-v1';
+const TOTAL_APARTMENTS = 394;
 const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
 const COMPARE_COLORS = ['#80bdff', '#8ee0a5', '#ffe680', '#ffc580', '#d7a8ef', '#ade3fc'];
-let donutChart;
 
-const targetRows = [
+const targetDefaults = [
   { rooms: '1–1.5', percent: 4, corridor: '3–5 %', targetCount: 16, function: 'gezielte kleine Einheiten', note: 'klein halten' },
   { rooms: '2–2.5', percent: 20, corridor: '18–22 %', targetCount: 79, function: 'Verkleinerung, ältere Personen, kleine Haushalte', note: 'deutlich erhöhen' },
   { rooms: '3–3.5', percent: 44, corridor: '42–46 %', targetCount: 173, function: 'Hauptsegment', note: 'reduzieren' },
@@ -20,14 +21,28 @@ const bgRows = [
   { rooms: '6–6.5', count: 2, percent: 0.5 }
 ];
 
-const cantonRows = [['1 Zimmer', 6.8], ['2 Zimmer', 16.2], ['3 Zimmer', 29.2], ['4 Zimmer', 27.4], ['5 Zimmer', 13.0], ['6+ Zimmer', 7.4]];
-const swissRows = [['1 Zimmer', "312'000", 6.4], ['2 Zimmer', "678'000", 14.0], ['3 Zimmer', "1'321'000", 27.3], ['4 Zimmer', "1'341'000", 27.7], ['5 Zimmer', "731'000", 15.1], ['6+ Zimmer', "460'000", 9.5]];
-let cityChartRows = [];
+const cantonRows = [
+  { label: '1 Zimmer', countLabel: '', percent: 6.8 },
+  { label: '2 Zimmer', countLabel: '', percent: 16.2 },
+  { label: '3 Zimmer', countLabel: '', percent: 29.2 },
+  { label: '4 Zimmer', countLabel: '', percent: 27.4 },
+  { label: '5 Zimmer', countLabel: '', percent: 13.0 },
+  { label: '6+ Zimmer', countLabel: '', percent: 7.4 }
+];
+
+const swissRows = [
+  { label: '1 Zimmer', countLabel: "312'000", percent: 6.4 },
+  { label: '2 Zimmer', countLabel: "678'000", percent: 14.0 },
+  { label: '3 Zimmer', countLabel: "1'321'000", percent: 27.3 },
+  { label: '4 Zimmer', countLabel: "1'341'000", percent: 27.7 },
+  { label: '5 Zimmer', countLabel: "731'000", percent: 15.1 },
+  { label: '6+ Zimmer', countLabel: "460'000", percent: 9.5 }
+];
 
 const chartMeta = {
   target: 'Quelle: eigene fachliche Ableitung. Kein amtlicher Sollwert.',
   bg: 'Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.',
-  city: 'Quelle: Stadt Zürich Open Data BAU506OD5062.csv; Anteile eigene Berechnung.',
+  city: 'Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert.',
   canton: 'Quelle: BFS / Kanton Zürich 2024; Werte als Referenzanteile.',
   swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.',
   none: ''
@@ -41,32 +56,180 @@ const chartTitles = {
   swiss: ['Schweiz', 'BFS']
 };
 
+const state = {
+  targetRows: structuredClone(targetDefaults),
+  chartType: 'target',
+  compareType: 'bg',
+  cityData: null,
+  dirty: false
+};
+
+const pieCharts = {};
+
+function structuredCloneFallback(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function cloneRows(rows) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(rows);
+  }
+  return structuredCloneFallback(rows);
+}
+
+function recalculateTargetCounts() {
+  state.targetRows.forEach((row) => {
+    row.targetCount = Math.round((row.percent / 100) * TOTAL_APARTMENTS);
+  });
+}
+
+function normalizePercents(editedIndex, nextValue) {
+  const tenthsTotal = 1000;
+  const nextTenths = Math.min(tenthsTotal, Math.max(0, Math.round(nextValue * 10)));
+  const currentTenths = state.targetRows.map((row) => Math.round(row.percent * 10));
+  const otherIndexes = currentTenths.map((_, index) => index).filter((index) => index !== editedIndex);
+  const otherTotal = otherIndexes.reduce((sum, index) => sum + currentTenths[index], 0);
+  const remainingTenths = tenthsTotal - nextTenths;
+  const nextTenthsValues = [...currentTenths];
+  nextTenthsValues[editedIndex] = nextTenths;
+
+  if (remainingTenths <= 0) {
+    otherIndexes.forEach((index) => {
+      nextTenthsValues[index] = 0;
+    });
+  } else if (otherTotal <= 0) {
+    const base = Math.floor(remainingTenths / otherIndexes.length);
+    let remainder = remainingTenths - base * otherIndexes.length;
+    otherIndexes.forEach((index) => {
+      nextTenthsValues[index] = base + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder -= 1;
+    });
+  } else {
+    const weighted = otherIndexes.map((index) => {
+      const raw = (currentTenths[index] / otherTotal) * remainingTenths;
+      return {
+        index,
+        base: Math.floor(raw),
+        fraction: raw - Math.floor(raw)
+      };
+    });
+
+    let assigned = weighted.reduce((sum, item) => sum + item.base, 0);
+    let remainder = remainingTenths - assigned;
+    weighted
+      .sort((a, b) => b.fraction - a.fraction)
+      .forEach((item) => {
+        nextTenthsValues[item.index] = item.base + (remainder > 0 ? 1 : 0);
+        if (remainder > 0) remainder -= 1;
+      });
+  }
+
+  state.targetRows.forEach((row, index) => {
+    row.percent = nextTenthsValues[index] / 10;
+  });
+}
+
+function saveState() {
+  const payload = {
+    chartType: state.chartType,
+    compareType: state.compareType,
+    targetRows: state.targetRows.map((row) => ({
+      rooms: row.rooms,
+      percent: row.percent,
+      corridor: row.corridor,
+      function: row.function,
+      note: row.note
+    }))
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  state.dirty = false;
+  updateStatus('Lokal gespeichert.');
+}
+
+function loadState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) {
+    recalculateTargetCounts();
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(saved);
+    const mergedRows = cloneRows(targetDefaults).map((row, index) => ({
+      ...row,
+      ...(parsed.targetRows?.[index] || {})
+    }));
+    state.targetRows = mergedRows;
+    state.chartType = parsed.chartType || 'target';
+    state.compareType = parsed.compareType || 'bg';
+    recalculateTargetCounts();
+    updateStatus('Lokale Version geladen.');
+  } catch {
+    state.targetRows = cloneRows(targetDefaults);
+    recalculateTargetCounts();
+    updateStatus('Gespeicherte Version konnte nicht gelesen werden.');
+  }
+}
+
+function resetState() {
+  state.targetRows = cloneRows(targetDefaults);
+  state.chartType = 'target';
+  state.compareType = 'bg';
+  recalculateTargetCounts();
+  localStorage.removeItem(STORAGE_KEY);
+  state.dirty = false;
+  syncSelects();
+  renderAll();
+  updateStatus('Auf Standardwerte zurückgesetzt.');
+}
+
+function updateStatus(text) {
+  const status = document.getElementById('targetStatus');
+  if (status) status.textContent = text;
+}
+
+function markDirty() {
+  state.dirty = true;
+  updateStatus('Ungespeicherte Änderungen.');
+}
+
+function syncSelects() {
+  document.getElementById('chartSelect').value = state.chartType;
+  document.getElementById('compareSelect').value = state.compareType;
+}
+
 function toPieRows(type) {
-  if (type === 'target') return targetRows.map(r => ({ name: r.rooms, value: r.percent }));
-  if (type === 'bg') return bgRows.map(r => ({ name: r.rooms, value: r.percent }));
-  if (type === 'city') return cityChartRows.length ? cityChartRows.map(r => ({ name: r.label, value: r.percent })) : [{ name: 'Daten laden', value: 100 }];
-  if (type === 'canton') return cantonRows.map(r => ({ name: r[0], value: r[1] }));
-  if (type === 'swiss') return swissRows.map(r => ({ name: r[0], value: r[2] }));
+  if (type === 'target') return state.targetRows.map((row) => ({ name: row.rooms, value: row.percent }));
+  if (type === 'bg') return bgRows.map((row) => ({ name: row.rooms, value: row.percent }));
+  if (type === 'city') return (state.cityData?.roomRows || []).map((row) => ({ name: row.label, value: row.percent }));
+  if (type === 'canton') return cantonRows.map((row) => ({ name: row.label, value: row.percent }));
+  if (type === 'swiss') return swissRows.map((row) => ({ name: row.label, value: row.percent }));
   return [];
 }
 
-function initDonutChart() {
-  const el = document.getElementById('mainPie');
-  donutChart = echarts.init(el, null, { renderer: 'svg' });
-  window.addEventListener('resize', () => donutChart.resize());
+function ensureChart(id, size = 'full') {
+  if (pieCharts[id]) return pieCharts[id];
+  const element = document.getElementById(id);
+  pieCharts[id] = echarts.init(element, null, { renderer: 'svg' });
+  window.addEventListener('resize', () => pieCharts[id].resize());
+  return pieCharts[id];
 }
 
-function seriesForRing(name, data, radius, colors, labelShown) {
+function createPieSeries(name, data, radius, colors, labelShown) {
   return {
     name,
     type: 'pie',
     radius,
-    center: ['50%', '44%'],
-    avoidLabelOverlap: true,
+    center: ['50%', '45%'],
     padAngle: 3,
     minAngle: 3,
+    avoidLabelOverlap: true,
     color: colors,
-    itemStyle: { borderRadius: 12, borderColor: '#fbfbfd', borderWidth: 4 },
+    itemStyle: {
+      borderRadius: 12,
+      borderColor: '#fbfbfd',
+      borderWidth: 4
+    },
     label: {
       show: labelShown,
       formatter: '{b}\n{d}%',
@@ -75,27 +238,35 @@ function seriesForRing(name, data, radius, colors, labelShown) {
       fontWeight: 700,
       fontFamily: 'Inter, sans-serif'
     },
-    labelLine: { show: labelShown, length: 12, length2: 8, lineStyle: { color: '#d2d2d7' } },
-    emphasis: { scale: true, scaleSize: 6, itemStyle: { shadowBlur: 18, shadowColor: 'rgba(0,0,0,.16)' } },
+    labelLine: {
+      show: labelShown,
+      length: 12,
+      length2: 8,
+      lineStyle: { color: '#d2d2d7' }
+    },
+    emphasis: {
+      scale: true,
+      scaleSize: 6,
+      itemStyle: { shadowBlur: 18, shadowColor: 'rgba(0,0,0,.16)' }
+    },
     data
   };
 }
 
-function renderMainPie(type = document.getElementById('chartSelect').value) {
-  if (!donutChart) initDonutChart();
-  const compareType = document.getElementById('compareSelect').value;
-  const hasCompare = compareType !== 'none' && compareType !== type;
-  const mainRows = toPieRows(type);
-  const compareRows = hasCompare ? toPieRows(compareType) : [];
-  const [line1, line2] = chartTitles[type] || ['', ''];
+function renderMainPie() {
+  const chart = ensureChart('mainPie');
+  const hasCompare = state.compareType !== 'none' && state.compareType !== state.chartType;
+  const mainRows = toPieRows(state.chartType);
+  const compareRows = hasCompare ? toPieRows(state.compareType) : [];
+  const [line1, line2] = chartTitles[state.chartType] || ['', ''];
   const series = hasCompare
     ? [
-        seriesForRing(`Innen: ${line1} ${line2}`, mainRows, ['38%', '57%'], COLORS, false),
-        seriesForRing(`Aussen: ${(chartTitles[compareType] || [compareType, '']).join(' ')}`, compareRows, ['64%', '84%'], COMPARE_COLORS, true)
+        createPieSeries(`Innen: ${line1} ${line2}`, mainRows, ['38%', '57%'], COLORS, false),
+        createPieSeries(`Aussen: ${(chartTitles[state.compareType] || [state.compareType, '']).join(' ')}`, compareRows, ['64%', '84%'], COMPARE_COLORS, true)
       ]
-    : [seriesForRing(`${line1} ${line2}`, mainRows, ['54%', '78%'], COLORS, true)];
+    : [createPieSeries(`${line1} ${line2}`, mainRows, ['54%', '78%'], COLORS, true)];
 
-  donutChart.setOption({
+  chart.setOption({
     animationDuration: 650,
     animationEasing: 'cubicOut',
     tooltip: {
@@ -103,7 +274,7 @@ function renderMainPie(type = document.getElementById('chartSelect').value) {
       borderWidth: 0,
       backgroundColor: 'rgba(29,29,31,.92)',
       textStyle: { color: '#fff', fontFamily: 'Inter, sans-serif' },
-      formatter: params => `${params.seriesName}<br>${params.marker}${params.name}: <b>${Number(params.value).toFixed(1).replace('.0', '')}%</b>`
+      formatter: (params) => `${params.seriesName}<br>${params.marker}${params.name}: <b>${Number(params.value).toFixed(1).replace('.0', '')}%</b>`
     },
     legend: {
       bottom: 0,
@@ -114,28 +285,115 @@ function renderMainPie(type = document.getElementById('chartSelect').value) {
       textStyle: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
     },
     graphic: [
-      { type: 'text', left: 'center', top: hasCompare ? '39%' : '42%', style: { text: line1, fill: '#1d1d1f', fontSize: 28, fontWeight: 800, fontFamily: 'Inter, sans-serif', textAlign: 'center' } },
-      { type: 'text', left: 'center', top: hasCompare ? '49%' : '52%', style: { text: line2, fill: '#6e6e73', fontSize: 14, fontWeight: 700, fontFamily: 'Inter, sans-serif', textAlign: 'center' } }
+      {
+        type: 'text',
+        left: 'center',
+        top: hasCompare ? '39%' : '42%',
+        style: {
+          text: line1,
+          fill: '#1d1d1f',
+          fontSize: 28,
+          fontWeight: 800,
+          fontFamily: 'Inter, sans-serif',
+          textAlign: 'center'
+        }
+      },
+      {
+        type: 'text',
+        left: 'center',
+        top: hasCompare ? '49%' : '52%',
+        style: {
+          text: line2,
+          fill: '#6e6e73',
+          fontSize: 14,
+          fontWeight: 700,
+          fontFamily: 'Inter, sans-serif',
+          textAlign: 'center'
+        }
+      }
     ],
     series
   }, true);
 
-  const source = hasCompare ? `${chartMeta[type]} Vergleich Aussenring: ${chartMeta[compareType]}` : chartMeta[type];
+  const source = hasCompare
+    ? `${chartMeta[state.chartType]} Vergleich Aussenring: ${chartMeta[state.compareType]}`
+    : chartMeta[state.chartType];
   document.getElementById('chartSource').textContent = source;
 }
 
-function recalculateTargetCounts() {
-  targetRows.forEach(row => {
-    row.targetCount = Math.round((row.percent / 100) * 394);
-  });
+function renderMiniPie(id, title, rows) {
+  const chart = ensureChart(id);
+  chart.setOption({
+    animationDuration: 500,
+    tooltip: {
+      trigger: 'item',
+      borderWidth: 0,
+      backgroundColor: 'rgba(29,29,31,.92)',
+      textStyle: { color: '#fff', fontFamily: 'Inter, sans-serif' },
+      formatter: (params) => `${params.marker}${params.name}: <b>${Number(params.value).toFixed(1).replace('.0', '')}%</b>`
+    },
+    legend: {
+      bottom: 0,
+      left: 'center',
+      itemWidth: 10,
+      itemHeight: 10,
+      icon: 'circle',
+      textStyle: { color: '#6e6e73', fontSize: 11, fontFamily: 'Inter, sans-serif' }
+    },
+    series: [
+      {
+        type: 'pie',
+        radius: ['44%', '72%'],
+        center: ['50%', '42%'],
+        padAngle: 3,
+        minAngle: 3,
+        color: COLORS,
+        label: {
+          show: true,
+          formatter: '{b}\n{d}%',
+          fontSize: 11,
+          fontWeight: 700,
+          color: '#1d1d1f'
+        },
+        labelLine: {
+          show: true,
+          length: 10,
+          length2: 6,
+          lineStyle: { color: '#d2d2d7' }
+        },
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fbfbfd',
+          borderWidth: 4
+        },
+        data: rows.map((row) => ({ name: row.label || row.rooms, value: row.percent }))
+      }
+    ],
+    graphic: [
+      {
+        type: 'text',
+        left: 'center',
+        top: '40%',
+        style: {
+          text: title,
+          fill: '#1d1d1f',
+          fontSize: 18,
+          fontWeight: 800,
+          fontFamily: 'Inter, sans-serif',
+          textAlign: 'center'
+        }
+      }
+    ]
+  }, true);
 }
 
-function renderTarget() {
-  document.querySelector('#targetTable tbody').innerHTML = targetRows.map((r, index) => `
+function renderTargetTable() {
+  const body = document.querySelector('#targetTable tbody');
+  body.innerHTML = state.targetRows.map((row, index) => `
     <tr>
-      <td>${r.rooms}</td>
+      <td>${row.rooms}</td>
       <td>
-        <label class="sr-only" for="target-percent-${index}">Prozent ${r.rooms}</label>
+        <label class="sr-only" for="target-percent-${index}">Prozent ${row.rooms}</label>
         <div class="editable-cell editable-percent">
           <input
             id="target-percent-${index}"
@@ -144,7 +402,7 @@ function renderTarget() {
             min="0"
             max="100"
             step="0.1"
-            value="${r.percent}"
+            value="${row.percent.toFixed(1).replace('.0', '')}"
             data-field="percent"
             data-index="${index}"
           >
@@ -152,34 +410,127 @@ function renderTarget() {
         </div>
       </td>
       <td>
-        <label class="sr-only" for="target-corridor-${index}">Zielkorridor ${r.rooms}</label>
+        <label class="sr-only" for="target-corridor-${index}">Zielkorridor ${row.rooms}</label>
         <input
           id="target-corridor-${index}"
           class="cell-input corridor-input"
           type="text"
-          value="${r.corridor}"
+          value="${row.corridor}"
           data-field="corridor"
           data-index="${index}"
         >
       </td>
-      <td>${r.targetCount}</td>
-      <td>${r.function}</td>
+      <td>${row.targetCount}</td>
+      <td>${row.function}</td>
     </tr>
   `).join('');
 }
 
-function renderBg() {
-  document.querySelector('#bgTable tbody').innerHTML = bgRows.map((r, i) => {
-    const target = targetRows[i].percent;
-    const diff = (r.percent - target).toFixed(1);
+function renderBgTable() {
+  document.querySelector('#bgTable tbody').innerHTML = bgRows.map((row, index) => {
+    const target = state.targetRows[index].percent;
+    const diff = Number((row.percent - target).toFixed(1));
     const cls = diff > 0 ? 'positive' : 'negative';
-    return `<tr><td>${r.rooms}</td><td>${r.count}</td><td>${r.percent.toFixed(1)} %</td><td>${target} %</td><td class="${cls}">${diff > 0 ? '+' : ''}${diff} %-Punkte</td><td>${targetRows[i].note}</td></tr>`;
+    return `
+      <tr>
+        <td>${row.rooms}</td>
+        <td>${row.count}</td>
+        <td>${row.percent.toFixed(1)} %</td>
+        <td>${target.toFixed(1).replace('.0', '')} %</td>
+        <td class="${cls}">${diff > 0 ? '+' : ''}${diff.toFixed(1).replace('.0', '')} %-Punkte</td>
+        <td>${state.targetRows[index].note}</td>
+      </tr>
+    `;
   }).join('');
 }
 
 function renderStaticTables() {
-  document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map(r => `<tr><td>${r[0]}</td><td>${r[1].toFixed(1)} %</td></tr>`).join('');
-  document.querySelector('#swissTable tbody').innerHTML = swissRows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].toFixed(1)} %</td></tr>`).join('');
+  document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map((row) => `
+    <tr><td>${row.label}</td><td>${row.percent.toFixed(1)} %</td></tr>
+  `).join('');
+
+  document.querySelector('#swissTable tbody').innerHTML = swissRows.map((row) => `
+    <tr><td>${row.label}</td><td>${row.countLabel}</td><td>${row.percent.toFixed(1)} %</td></tr>
+  `).join('');
+}
+
+function renderCityTables() {
+  if (!state.cityData) return;
+  document.querySelector('#cityTable tbody').innerHTML = state.cityData.roomRows.map((row) => `
+    <tr>
+      <td>${row.label}</td>
+      <td>${Number(row.count).toLocaleString('de-CH')}</td>
+      <td>${row.percent.toFixed(1)} %</td>
+      <td>${state.cityData.latestYear}</td>
+    </tr>
+  `).join('');
+  document.getElementById('citySourceNote').textContent =
+    `Quelle: Snapshot aus BAU506OD5062.csv, Datenjahr ${state.cityData.latestYear}, im Repo gespeichert unter data/city-zurich.json.`;
+}
+
+function renderHistory() {
+  if (!state.cityData) return;
+  const rows = [...state.cityData.historyRows].sort((a, b) => a.year - b.year);
+  const recent = rows.slice(-8);
+  const values = rows.map((row) => row.total);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const width = 760;
+  const height = 250;
+  const padding = 34;
+  const points = rows.map((row, index) => {
+    const x = padding + (index / Math.max(rows.length - 1, 1)) * (width - padding * 2);
+    const y = height - padding - ((row.total - min) / Math.max(max - min, 1)) * (height - padding * 2);
+    return { ...row, x, y };
+  });
+
+  document.getElementById('historyChart').innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" aria-hidden="true">
+      <polyline
+        points="${points.map((point) => `${point.x},${point.y}`).join(' ')}"
+        fill="none"
+        stroke="#007aff"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#e5e5ea" />
+      <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#e5e5ea" />
+      ${points.map((point) => `
+        <circle cx="${point.x}" cy="${point.y}" r="3.5" fill="#007aff">
+          <title>${point.year}: ${point.total.toLocaleString('de-CH')}</title>
+        </circle>
+      `).join('')}
+      <text x="${padding}" y="22" class="svg-label">${rows[0].year}</text>
+      <text x="${width - padding}" y="22" text-anchor="end" class="svg-label">${rows[rows.length - 1].year}</text>
+    </svg>
+  `;
+
+  document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map((row) => {
+    const previous = rows.find((entry) => entry.year === row.year - 1);
+    const diff = previous ? row.total - previous.total : null;
+    return `
+      <tr>
+        <td>${row.year}</td>
+        <td>${row.total.toLocaleString('de-CH')}</td>
+        <td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderAll() {
+  syncSelects();
+  renderTargetTable();
+  renderBgTable();
+  renderStaticTables();
+  renderCityTables();
+  renderHistory();
+  renderMainPie();
+  renderMiniPie('bgPie', 'BG', bgRows.map((row) => ({ label: row.rooms, percent: row.percent })));
+  if (state.cityData) renderMiniPie('cityPie', 'Stadt', state.cityData.roomRows);
+  renderMiniPie('cantonPie', 'Kanton', cantonRows);
+  renderMiniPie('swissPie', 'Schweiz', swissRows);
 }
 
 function handleTargetTableInput(event) {
@@ -187,118 +538,63 @@ function handleTargetTableInput(event) {
   if (!(input instanceof HTMLInputElement)) return;
   const index = Number(input.dataset.index);
   const field = input.dataset.field;
-  if (!Number.isInteger(index) || !field || !targetRows[index]) return;
+  if (!Number.isInteger(index) || !field || !state.targetRows[index]) return;
 
   if (field === 'percent') {
     const nextValue = Number(input.value);
     if (Number.isNaN(nextValue)) return;
-    const clamped = Math.min(100, Math.max(0, nextValue));
-    targetRows[index].percent = clamped;
+    normalizePercents(index, nextValue);
     recalculateTargetCounts();
-    renderTarget();
-    renderBg();
-    renderMainPie();
+    renderAll();
+    markDirty();
     const refreshed = document.getElementById(`target-percent-${index}`);
-    if (refreshed) refreshed.focus();
-    if (refreshed) refreshed.select();
+    if (refreshed) {
+      refreshed.focus();
+      refreshed.select();
+    }
     return;
   }
 
   if (field === 'corridor') {
-    targetRows[index].corridor = input.value;
+    state.targetRows[index].corridor = input.value;
+    markDirty();
   }
-}
-
-function parseCsv(text) {
-  const delimiter = text.indexOf(';') > -1 ? ';' : ',';
-  const lines = text.trim().split(/\r?\n/);
-  const headers = lines.shift().split(delimiter).map(h => h.replace(/^"|"$/g, ''));
-  return lines.map(line => {
-    const cols = line.split(delimiter).map(c => c.replace(/^"|"$/g, ''));
-    return Object.fromEntries(headers.map((h, i) => [h, cols[i]]));
-  });
-}
-
-function getYear(row) { return row.StichtagDatJahr || row.Jahr || row.STICHTAGDATJAHR || row.stichtagdatjahr; }
-function getCount(row) { return Number(String(row.AnzWhgStat || row.AnzWhg || row.Wohnungen || row.anzahl || '0').replace(/[^0-9.-]/g, '')); }
-function roomLabel(row) { return row.AnzZimmerLevel2Lang_noDM || row.AnzZimmerLevel2Cd_noDM || row.Zimmerzahl || row.anzzimmer || ''; }
-function groupCityRooms(label) {
-  const text = String(label || '').toLowerCase();
-  if (text.includes('1')) return '1 Zimmer';
-  if (text.includes('2')) return '2 Zimmer';
-  if (text.includes('3')) return '3 Zimmer';
-  if (text.includes('4')) return '4 Zimmer';
-  if (text.includes('5')) return '5 Zimmer';
-  if (text.includes('6')) return '6+ Zimmer';
-  return null;
-}
-
-function renderHistory(yearTotals) {
-  const rows = [...yearTotals.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
-  const recent = rows.slice(-8);
-  const values = rows.map(r => r[1]);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const w = 760, h = 250, p = 34;
-  const points = rows.map(([year, value], i) => {
-    const x = p + (i / Math.max(rows.length - 1, 1)) * (w - p * 2);
-    const y = h - p - ((value - min) / Math.max(max - min, 1)) * (h - p * 2);
-    return { year, value, x, y };
-  });
-  const poly = points.map(p => `${p.x},${p.y}`).join(' ');
-  document.getElementById('historyChart').innerHTML = `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${poly}" fill="none" stroke="#007aff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#e5e5ea"/><line x1="${p}" y1="${p}" x2="${p}" y2="${h-p}" stroke="#e5e5ea"/>${points.map(pt => `<circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="#007aff"><title>${pt.year}: ${pt.value.toLocaleString('de-CH')}</title></circle>`).join('')}<text x="${p}" y="22" class="svg-label">${rows[0][0]}</text><text x="${w-p}" y="22" text-anchor="end" class="svg-label">${rows[rows.length-1][0]}</text></svg>`;
-  document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map(([year, value]) => {
-    const previous = rows.find(r => Number(r[0]) === Number(year) - 1);
-    const diff = previous ? value - previous[1] : null;
-    return `<tr><td>${year}</td><td>${value.toLocaleString('de-CH')}</td><td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td></tr>`;
-  }).join('');
 }
 
 async function loadCityData() {
-  const url = 'https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/download/BAU506OD5062.csv';
-  const cityBody = document.querySelector('#cityTable tbody');
-  try {
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Quelle nicht erreichbar');
-    const rows = parseCsv(await res.text());
-    const years = [...new Set(rows.map(getYear).filter(Boolean))].sort();
-    const latest = years[years.length - 1];
-    const grouped = new Map();
-    const yearTotals = new Map();
-    rows.forEach(r => {
-      const y = getYear(r);
-      const c = getCount(r);
-      if (!y || !c) return;
-      yearTotals.set(y, (yearTotals.get(y) || 0) + c);
-      if (y === latest) {
-        const key = groupCityRooms(roomLabel(r));
-        if (key) grouped.set(key, (grouped.get(key) || 0) + c);
-      }
-    });
-    const total = [...grouped.values()].reduce((a, b) => a + b, 0);
-    const order = ['1 Zimmer', '2 Zimmer', '3 Zimmer', '4 Zimmer', '5 Zimmer', '6+ Zimmer'];
-    cityChartRows = order.map(k => {
-      const count = grouped.get(k) || 0;
-      const percent = total ? ((count / total) * 100) : 0;
-      return { label: k, percent, count };
-    });
-    cityBody.innerHTML = cityChartRows.map(r => `<tr><td>${r.label}</td><td>${r.count.toLocaleString('de-CH')}</td><td>${r.percent.toFixed(1)} %</td><td>${latest}</td></tr>`).join('');
-    renderHistory(yearTotals);
-    const compareType = document.getElementById('compareSelect').value;
-    if (document.getElementById('chartSelect').value === 'city' || compareType === 'city') renderMainPie();
-  } catch (error) {
-    cityBody.innerHTML = `<tr><td colspan="4">Automatisches Laden nicht möglich. Bitte Tabelle direkt aus BAU506OD5062.csv übernehmen.</td></tr>`;
-    document.getElementById('historyChart').textContent = 'Automatisches Laden nicht möglich. Quelle bitte direkt prüfen.';
-    document.querySelector('#historyTable tbody').innerHTML = `<tr><td colspan="3">Keine Zeitreihe geladen.</td></tr>`;
+  const response = await fetch('data/city-zurich.json', { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error('Lokaler Zürich-Snapshot nicht verfügbar.');
   }
+  state.cityData = await response.json();
 }
 
-document.getElementById('chartSelect').addEventListener('change', () => renderMainPie());
-document.getElementById('compareSelect').addEventListener('change', () => renderMainPie());
-document.querySelector('#targetTable tbody').addEventListener('input', handleTargetTableInput);
-recalculateTargetCounts();
-renderTarget();
-renderBg();
-renderStaticTables();
-renderMainPie('target');
-loadCityData();
+async function init() {
+  loadState();
+
+  document.getElementById('chartSelect').addEventListener('change', (event) => {
+    state.chartType = event.target.value;
+    renderMainPie();
+    markDirty();
+  });
+
+  document.getElementById('compareSelect').addEventListener('change', (event) => {
+    state.compareType = event.target.value;
+    renderMainPie();
+    markDirty();
+  });
+
+  document.querySelector('#targetTable tbody').addEventListener('input', handleTargetTableInput);
+  document.getElementById('saveTargetRows').addEventListener('click', saveState);
+  document.getElementById('resetTargetRows').addEventListener('click', resetState);
+
+  try {
+    await loadCityData();
+  } catch (error) {
+    updateStatus(`Zürich-Snapshot konnte nicht geladen werden: ${error.message}`);
+  }
+
+  renderAll();
+}
+
+init();

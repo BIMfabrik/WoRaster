@@ -1,5 +1,6 @@
 @media (max-width: 860px) {
-  html, body {
+  html,
+  body {
     overflow-x: hidden;
   }
 
@@ -11,13 +12,13 @@
     position: sticky;
     top: 0;
     width: 100%;
-    padding: .65rem .75rem .55rem;
-    gap: .55rem;
-    border-bottom: 1px solid rgba(0,0,0,.06);
+    padding: 0.65rem 0.75rem 0.55rem;
+    gap: 0.55rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   .brand {
-    font-size: .95rem;
+    font-size: 0.95rem;
   }
 
   .nav {
@@ -25,8 +26,8 @@
     width: 100%;
     overflow-x: auto;
     flex-wrap: nowrap;
-    gap: .35rem;
-    padding-bottom: .2rem;
+    gap: 0.35rem;
+    padding-bottom: 0.2rem;
     scrollbar-width: none;
   }
 
@@ -37,78 +38,61 @@
   .nav a {
     flex: 0 0 auto;
     background: #fff;
-    border: 1px solid rgba(0,0,0,.06);
-    font-size: .82rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 0.82rem;
     line-height: 1;
-    padding: .55rem .7rem;
+    padding: 0.55rem 0.7rem;
   }
 
   .page {
     width: 100%;
-    padding: .75rem .55rem 3rem;
+    padding: 0.75rem 0.55rem 3rem;
   }
 
   .panel {
-    margin-top: .65rem;
+    margin-top: 0.65rem;
     padding: 1rem;
     border-radius: 22px;
-  }
-
-  .hero {
-    min-height: auto;
-    padding: 2rem 1rem;
-    text-align: left;
-    place-items: start;
-  }
-
-  h1 {
-    font-size: clamp(3rem, 18vw, 5.2rem);
-    line-height: .9;
-    letter-spacing: -.08em;
-  }
-
-  h2 {
-    font-size: clamp(2rem, 11vw, 3.2rem);
-    line-height: .95;
-  }
-
-  .intro,
-  .section-heading p {
-    margin-left: 0;
-    margin-right: 0;
-    font-size: .98rem;
   }
 
   .section-heading.compact {
     text-align: left;
   }
 
-  .dashboard-grid,
-  .timeline-grid,
-  .comparison-grid,
-  .method-grid,
-  .rules-grid {
-    grid-template-columns: 1fr !important;
-    gap: .7rem;
+  .section-heading p,
+  .diagram-note {
+    margin-left: 0;
+    margin-right: 0;
+    font-size: 0.98rem;
+  }
+
+  .target-heading {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .target-actions {
+    width: 100%;
+  }
+
+  .action-button {
+    flex: 1 1 0;
   }
 
   .chart-card,
   .data-card,
   .method-card,
-  .callout {
-    padding: .85rem;
+  .callout,
+  .control-panel {
+    padding: 0.85rem;
     border-radius: 18px;
-  }
-
-  .chart-card {
-    min-height: auto;
   }
 
   .chart-toolbar {
     display: grid;
     grid-template-columns: 1fr;
-    gap: .6rem;
-    padding: .65rem;
+    gap: 0.6rem;
+    padding: 0.65rem;
     border-radius: 18px;
   }
 
@@ -126,12 +110,18 @@
     min-height: 280px;
   }
 
+  .mini-pie {
+    height: 270px;
+    min-height: 250px;
+  }
+
   .line-chart {
     min-height: 210px;
   }
 
-  .source-note {
-    font-size: .78rem;
+  .source-note,
+  .target-status {
+    font-size: 0.78rem;
   }
 }
 
@@ -158,8 +148,8 @@
 
   tbody tr,
   tfoot tr {
-    margin-bottom: .65rem;
-    padding: .75rem;
+    margin-bottom: 0.65rem;
+    padding: 0.75rem;
     border: 1px solid #d2d2d7;
     border-radius: 16px;
     background: #fff;
@@ -174,10 +164,10 @@
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    padding: .42rem 0;
+    padding: 0.42rem 0;
     border-bottom: 1px solid #ececf0;
     white-space: normal;
-    font-size: .9rem;
+    font-size: 0.9rem;
   }
 
   td:last-child,
@@ -190,9 +180,9 @@
     content: attr(data-label);
     max-width: 45%;
     color: #6e6e73;
-    font-size: .72rem;
+    font-size: 0.72rem;
     font-weight: 800;
-    letter-spacing: .04em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
@@ -231,32 +221,49 @@
   #swissTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }
   #swissTable tbody td:nth-child(3)::before { content: 'Anteil'; }
 
-  .wide-table table {
-    min-width: 0;
-  }
-
   .rules-grid table tbody td:nth-child(1)::before { content: 'Personen'; }
   .rules-grid table tbody td:nth-child(2)::before { content: 'Grösse'; }
   .rules-grid table tbody td:nth-child(3)::before { content: 'Grenze'; }
+
+  #targetTable {
+    border-spacing: 0;
+  }
+
+  #targetTable tbody td {
+    border: 0;
+    border-bottom: 1px solid #ececf0;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .editable-percent .cell-input,
+  .corridor-input {
+    width: 100%;
+  }
 
   .echart-donut {
     height: 280px;
     min-height: 260px;
   }
 
+  .mini-pie {
+    height: 240px;
+    min-height: 220px;
+  }
+
   .callout {
-    font-size: .92rem;
+    font-size: 0.92rem;
   }
 }
 
 @media (max-width: 420px) {
   .page {
-    padding-left: .4rem;
-    padding-right: .4rem;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
   }
 
   .panel {
-    padding: .8rem;
+    padding: 0.8rem;
     border-radius: 18px;
   }
 
@@ -265,7 +272,8 @@
     min-height: 240px;
   }
 
-  h1 {
-    font-size: clamp(2.7rem, 18vw, 4.4rem);
+  .mini-pie {
+    height: 220px;
+    min-height: 200px;
   }
 }

@@ -1,0 +1,422 @@
+{
+  "source": "https://data.stadt-zuerich.ch/dataset/bau_best_whg_zizahl_jahr_od5062/download/BAU506OD5062.csv",
+  "latestYear": 2025,
+  "roomRows": [
+    {
+      "label": "1 Zimmer",
+      "count": 28589,
+      "percent": 12.0
+    },
+    {
+      "label": "2 Zimmer",
+      "count": 56174,
+      "percent": 23.6
+    },
+    {
+      "label": "3 Zimmer",
+      "count": 83512,
+      "percent": 35.0
+    },
+    {
+      "label": "4 Zimmer",
+      "count": 49932,
+      "percent": 20.9
+    },
+    {
+      "label": "5 Zimmer",
+      "count": 14098,
+      "percent": 5.9
+    },
+    {
+      "label": "6+ Zimmer",
+      "count": 6167,
+      "percent": 2.6
+    }
+  ],
+  "historyRows": [
+    {
+      "year": 1930,
+      "total": 75298
+    },
+    {
+      "year": 1931,
+      "total": 79665
+    },
+    {
+      "year": 1932,
+      "total": 84210
+    },
+    {
+      "year": 1933,
+      "total": 86179
+    },
+    {
+      "year": 1934,
+      "total": 88877
+    },
+    {
+      "year": 1935,
+      "total": 90636
+    },
+    {
+      "year": 1936,
+      "total": 91196
+    },
+    {
+      "year": 1937,
+      "total": 92109
+    },
+    {
+      "year": 1938,
+      "total": 93725
+    },
+    {
+      "year": 1939,
+      "total": 96232
+    },
+    {
+      "year": 1940,
+      "total": 97284
+    },
+    {
+      "year": 1941,
+      "total": 98333
+    },
+    {
+      "year": 1942,
+      "total": 99842
+    },
+    {
+      "year": 1943,
+      "total": 101379
+    },
+    {
+      "year": 1944,
+      "total": 103276
+    },
+    {
+      "year": 1945,
+      "total": 105203
+    },
+    {
+      "year": 1946,
+      "total": 107172
+    },
+    {
+      "year": 1947,
+      "total": 108833
+    },
+    {
+      "year": 1948,
+      "total": 111447
+    },
+    {
+      "year": 1949,
+      "total": 113492
+    },
+    {
+      "year": 1950,
+      "total": 115874
+    },
+    {
+      "year": 1951,
+      "total": 119812
+    },
+    {
+      "year": 1952,
+      "total": 123958
+    },
+    {
+      "year": 1953,
+      "total": 127107
+    },
+    {
+      "year": 1954,
+      "total": 130426
+    },
+    {
+      "year": 1955,
+      "total": 133095
+    },
+    {
+      "year": 1956,
+      "total": 134823
+    },
+    {
+      "year": 1957,
+      "total": 137087
+    },
+    {
+      "year": 1958,
+      "total": 139630
+    },
+    {
+      "year": 1959,
+      "total": 142087
+    },
+    {
+      "year": 1960,
+      "total": 144659
+    },
+    {
+      "year": 1961,
+      "total": 146427
+    },
+    {
+      "year": 1962,
+      "total": 147965
+    },
+    {
+      "year": 1963,
+      "total": 149171
+    },
+    {
+      "year": 1964,
+      "total": 150813
+    },
+    {
+      "year": 1965,
+      "total": 152568
+    },
+    {
+      "year": 1966,
+      "total": 154481
+    },
+    {
+      "year": 1967,
+      "total": 155980
+    },
+    {
+      "year": 1968,
+      "total": 157853
+    },
+    {
+      "year": 1969,
+      "total": 159776
+    },
+    {
+      "year": 1970,
+      "total": 156827
+    },
+    {
+      "year": 1971,
+      "total": 157678
+    },
+    {
+      "year": 1972,
+      "total": 159280
+    },
+    {
+      "year": 1973,
+      "total": 160768
+    },
+    {
+      "year": 1974,
+      "total": 162235
+    },
+    {
+      "year": 1975,
+      "total": 163095
+    },
+    {
+      "year": 1976,
+      "total": 164990
+    },
+    {
+      "year": 1977,
+      "total": 166715
+    },
+    {
+      "year": 1978,
+      "total": 167258
+    },
+    {
+      "year": 1979,
+      "total": 168109
+    },
+    {
+      "year": 1980,
+      "total": 169310
+    },
+    {
+      "year": 1981,
+      "total": 170543
+    },
+    {
+      "year": 1982,
+      "total": 172035
+    },
+    {
+      "year": 1983,
+      "total": 172611
+    },
+    {
+      "year": 1984,
+      "total": 173517
+    },
+    {
+      "year": 1985,
+      "total": 174858
+    },
+    {
+      "year": 1986,
+      "total": 175858
+    },
+    {
+      "year": 1987,
+      "total": 176492
+    },
+    {
+      "year": 1988,
+      "total": 177060
+    },
+    {
+      "year": 1989,
+      "total": 177663
+    },
+    {
+      "year": 1990,
+      "total": 177974
+    },
+    {
+      "year": 1991,
+      "total": 178982
+    },
+    {
+      "year": 1992,
+      "total": 179377
+    },
+    {
+      "year": 1993,
+      "total": 190244
+    },
+    {
+      "year": 1994,
+      "total": 191643
+    },
+    {
+      "year": 1995,
+      "total": 192710
+    },
+    {
+      "year": 1996,
+      "total": 193923
+    },
+    {
+      "year": 1997,
+      "total": 194374
+    },
+    {
+      "year": 1998,
+      "total": 195133
+    },
+    {
+      "year": 1999,
+      "total": 195927
+    },
+    {
+      "year": 2000,
+      "total": 197199
+    },
+    {
+      "year": 2001,
+      "total": 198200
+    },
+    {
+      "year": 2002,
+      "total": 198912
+    },
+    {
+      "year": 2003,
+      "total": 200590
+    },
+    {
+      "year": 2004,
+      "total": 201166
+    },
+    {
+      "year": 2005,
+      "total": 202118
+    },
+    {
+      "year": 2006,
+      "total": 203839
+    },
+    {
+      "year": 2007,
+      "total": 205618
+    },
+    {
+      "year": 2008,
+      "total": 206788
+    },
+    {
+      "year": 2009,
+      "total": 207581
+    },
+    {
+      "year": 2010,
+      "total": 208089
+    },
+    {
+      "year": 2011,
+      "total": 209754
+    },
+    {
+      "year": 2012,
+      "total": 211971
+    },
+    {
+      "year": 2013,
+      "total": 214472
+    },
+    {
+      "year": 2014,
+      "total": 215477
+    },
+    {
+      "year": 2015,
+      "total": 218057
+    },
+    {
+      "year": 2016,
+      "total": 219950
+    },
+    {
+      "year": 2017,
+      "total": 222249
+    },
+    {
+      "year": 2018,
+      "total": 225294
+    },
+    {
+      "year": 2019,
+      "total": 227136
+    },
+    {
+      "year": 2020,
+      "total": 228817
+    },
+    {
+      "year": 2021,
+      "total": 229564
+    },
+    {
+      "year": 2022,
+      "total": 231522
+    },
+    {
+      "year": 2023,
+      "total": 233903
+    },
+    {
+      "year": 2024,
+      "total": 236402
+    },
+    {
+      "year": 2025,
+      "total": 238472
+    }
+  ]
+}
