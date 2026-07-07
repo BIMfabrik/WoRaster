@@ -4,16 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WoRaster | Wohnungsraster BG</title>
-  <meta
-    name="description"
-    content="Wohnungsraster der BG mit Soll, Ist, Vermietungsreglement, Entwicklung und Vergleichsdaten."
-  >
+  <meta name="description" content="Wohnungsraster der BG mit Soll, Ist, Vermietungsreglement, Entwicklung und Vergleichsdaten.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="mobile.css">
 </head>
@@ -29,423 +23,41 @@
       <a href="#stadt-zuerich">Stadt Zürich</a>
       <a href="#kanton-zuerich">Kanton Zürich</a>
       <a href="#schweiz">Schweiz</a>
+      <a href="#prognose">Prognose</a>
     </nav>
   </header>
 
   <main class="page" id="top">
     <section class="panel chart-panel" id="vorschlag">
-      <div class="section-heading compact">
-        <p class="eyebrow">Diagramm</p>
-        <h2>Wohnungsmix vergleichen</h2>
-      </div>
-
-      <div class="control-panel apple-card">
-        <div class="control-panel-header">
-          <p class="diagram-note">
-            Innenring = Soll-Vorschlag. Aussenring = optionale Vergleichsquelle.
-          </p>
-        </div>
-        <div class="chart-toolbar compare-toolbar">
-          <div>
-            <label for="chartSelect">Innenring</label>
-            <select id="chartSelect">
-              <option value="target">Soll-Vorschlag</option>
-              <option value="bg">Bestand BG</option>
-              <option value="city">Stadt Zürich</option>
-              <option value="canton">Kanton Zürich</option>
-              <option value="swiss">Schweiz</option>
-            </select>
-          </div>
-          <div>
-            <label for="compareSelect">Aussenring</label>
-            <select id="compareSelect">
-              <option value="none">Kein Vergleich</option>
-              <option value="target">Soll-Vorschlag</option>
-              <option value="bg" selected>Bestand BG</option>
-              <option value="city">Stadt Zürich</option>
-              <option value="canton">Kanton Zürich</option>
-              <option value="swiss">Schweiz</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="chart-card apple-card chart-card-main">
-        <div class="main-pie-layout">
-          <div class="echart-donut" id="mainPie" role="img" aria-label="Diagramm Wohnungsmix mit Vergleichsring"></div>
-          <div class="chart-side-legend" id="chartLegend" aria-label="Legende"></div>
-        </div>
-      </div>
-
-      <details class="overview-disclosure">
-        <summary class="section-summary">
-          <div class="overview-summary-copy">
-            <span class="field-label">Gesamtvergleich</span>
-            <strong>Alle Datensätze als Säulendiagramm</strong>
-          </div>
-        </summary>
-        <div class="section-disclosure-body">
-          <div class="data-card apple-card">
-            <h3>Vergleich aller Quellen nach Zimmerkategorie</h3>
-            <div class="bar-chart" id="overviewBarChart" role="img" aria-label="Säulendiagramm aller Quellen"></div>
-          </div>
-        </div>
-      </details>
+      <div class="section-heading compact"><p class="eyebrow">Diagramm</p><h2>Wohnungsmix vergleichen</h2></div>
+      <div class="control-panel apple-card"><div class="control-panel-header"><p class="diagram-note">Innenring = Soll-Vorschlag. Aussenring = optionale Vergleichsquelle.</p></div><div class="chart-toolbar compare-toolbar"><div><label for="chartSelect">Innenring</label><select id="chartSelect"><option value="target">Soll-Vorschlag</option><option value="bg">Bestand BG</option><option value="city">Stadt Zürich</option><option value="canton">Kanton Zürich</option><option value="swiss">Schweiz</option></select></div><div><label for="compareSelect">Aussenring</label><select id="compareSelect"><option value="none">Kein Vergleich</option><option value="target">Soll-Vorschlag</option><option value="bg" selected>Bestand BG</option><option value="city">Stadt Zürich</option><option value="canton">Kanton Zürich</option><option value="swiss">Schweiz</option></select></div></div></div>
+      <div class="chart-card apple-card chart-card-main"><div class="main-pie-layout"><div class="echart-donut" id="mainPie" role="img" aria-label="Diagramm Wohnungsmix mit Vergleichsring"></div><div class="chart-side-legend" id="chartLegend" aria-label="Legende"></div></div></div>
+      <details class="overview-disclosure"><summary class="section-summary"><div class="overview-summary-copy"><span class="field-label">Gesamtvergleich</span><strong>Alle Datensätze als Säulendiagramm</strong></div></summary><div class="section-disclosure-body"><div class="data-card apple-card"><h3>Vergleich aller Quellen nach Zimmerkategorie</h3><div class="bar-chart" id="overviewBarChart" role="img" aria-label="Säulendiagramm aller Quellen"></div></div></div></details>
     </section>
 
     <section class="panel target-panel" id="zielraster">
-      <div class="section-heading compact target-heading centered">
-        <div class="target-heading-main">
-          <p class="eyebrow">Soll</p>
-          <h2>Vorschlag Soll-Raster</h2>
-        </div>
-      </div>
+      <div class="section-heading compact target-heading centered"><div class="target-heading-main"><p class="eyebrow">Soll</p><h2>Vorschlag Soll-Raster</h2></div></div>
       <p class="target-status" id="targetStatus">Noch nicht lokal gespeichert.</p>
-      <div class="target-controls">
-        <div class="target-controls-left">
-          <label class="field-label" for="totalApartments">Anzahl Wohnungen</label>
-          <input type="number" id="totalApartments" class="total-apartments-input" min="1" step="1" value="394">
-        </div>
-        <div class="target-actions lower">
-          <button type="button" id="saveTargetRows" class="action-button primary">Speichern</button>
-          <button type="button" id="resetTargetRows" class="action-button secondary">Zurücksetzen</button>
-        </div>
-      </div>
-      <div class="table-wrap wide-table target-table-wrap">
-        <table id="targetTable">
-          <thead>
-            <tr>
-              <th>Anzahl Zimmer</th>
-              <th>Prozent</th>
-              <th>Zielkorridor</th>
-              <th class="th-wrap">Zielanzahl bei <span id="apartmentsHeaderLabel">394</span> Wohnungen</th>
-              <th>Funktion</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <p class="source-note">
-        Quelle: eigene fachliche Ableitung; Grundlage sind interner Mobilitätsbedarf,
-        Familienwohnungen, Verkleinerungsoptionen und offizielle Vergleichsdaten.
-        Werte lassen sich anpassen und lokal speichern.
-      </p>
+      <div class="target-controls"><div class="target-controls-left"><label class="field-label" for="totalApartments">Anzahl Wohnungen</label><input type="number" id="totalApartments" class="total-apartments-input" min="1" step="1" value="394"></div><div class="target-actions lower"><button type="button" id="saveTargetRows" class="action-button primary">Speichern</button><button type="button" id="resetTargetRows" class="action-button secondary">Zurücksetzen</button></div></div>
+      <div class="table-wrap wide-table target-table-wrap"><table id="targetTable"><thead><tr><th>Anzahl Zimmer</th><th>Prozent</th><th>Zielkorridor</th><th class="th-wrap">Zielanzahl bei <span id="apartmentsHeaderLabel">394</span> Wohnungen</th><th>Funktion</th></tr></thead><tbody></tbody></table></div>
+      <p class="source-note">Quelle: eigene fachliche Ableitung; Grundlage sind interner Mobilitätsbedarf, Familienwohnungen, Verkleinerungsoptionen und offizielle Vergleichsdaten. Werte lassen sich anpassen und lokal speichern.</p>
     </section>
 
-    <section class="panel split-panel" id="bauprojekt">
-      <div class="section-heading compact">
-        <p class="eyebrow">Bauprojekt</p>
-        <h2>Wohnungsspiegel Bauprojekt</h2>
-        <p>Verteilung gemäss Projektübersicht mit 127 Wohnungen und zusätzlichem Gäste-Studio im EG.</p>
-      </div>
-      <div class="split-grid">
-        <div class="chart-card apple-card compact-chart-card">
-          <h3>Verteilung Bauprojekt</h3>
-          <div class="mini-pie" id="projectPie" role="img" aria-label="Diagramm Wohnungsbestand Bauprojekt"></div>
-          <p class="source-note">
-            Quelle: übermittelter Wohnungsspiegel aus Projektunterlage.
-          </p>
-        </div>
-        <div class="data-card apple-card full-width-card">
-          <h3>Wohnungsspiegel</h3>
-          <div class="table-wrap">
-            <table id="projectTable">
-              <thead>
-                <tr>
-                  <th>Typ</th>
-                  <th>Wohnungen</th>
-                  <th>Anteil</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-              <tfoot>
-                <tr>
-                  <th>Total WHG</th>
-                  <th>127</th>
-                  <th>100 %</th>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-          <div class="callout slim project-note">
-            <strong>Zusatz:</strong> Gäste-Studio im EG: 4 Einheiten.
-          </div>
-        </div>
-      </div>
-    </section>
+    <section class="panel split-panel" id="bauprojekt"><div class="section-heading compact"><p class="eyebrow">Bauprojekt</p><h2>Wohnungsspiegel Bauprojekt</h2><p>Verteilung gemäss Projektübersicht mit 127 Wohnungen und zusätzlichem Gäste-Studio im EG.</p></div><div class="split-grid"><div class="chart-card apple-card compact-chart-card"><h3>Verteilung Bauprojekt</h3><div class="mini-pie" id="projectPie" role="img" aria-label="Diagramm Wohnungsbestand Bauprojekt"></div><p class="source-note">Quelle: übermittelter Wohnungsspiegel aus Projektunterlage.</p></div><div class="data-card apple-card full-width-card"><h3>Wohnungsspiegel</h3><div class="table-wrap"><table id="projectTable"><thead><tr><th>Typ</th><th>Wohnungen</th><th>Anteil</th></tr></thead><tbody></tbody><tfoot><tr><th>Total WHG</th><th>127</th><th>100 %</th></tr></tfoot></table></div><div class="callout slim project-note"><strong>Zusatz:</strong> Gäste-Studio im EG: 4 Einheiten.</div></div></div></section>
 
-    <section class="panel split-panel" id="bestand">
-      <div class="section-heading compact">
-        <p class="eyebrow">Ist</p>
-        <h2>Bestand Genossenschaft</h2>
-      </div>
-      <div class="split-grid">
-        <div class="chart-card apple-card compact-chart-card">
-          <h3>Verteilung Bestand BG</h3>
-          <div class="mini-pie" id="bgPie" role="img" aria-label="Diagramm Wohnungsbestand BG"></div>
-          <p class="source-note">
-            Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.
-          </p>
-        </div>
-        <div class="data-card apple-card full-width-card">
-          <h3>Öffentlich verfügbarer Bestand der BG</h3>
-          <div class="table-wrap wide-table">
-            <table id="bgTable">
-              <thead>
-                <tr>
-                  <th>Anzahl Zimmer</th>
-                  <th>Wohnungen</th>
-                  <th>Anteil</th>
-                  <th>Soll</th>
-                  <th>Differenz zum Soll</th>
-                  <th>Hinweis</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-              <tfoot>
-                <tr>
-                  <th>Total</th>
-                  <th>394</th>
-                  <th>100 %</th>
-                  <th>100 %</th>
-                  <th>–</th>
-                  <th>Referenzbestand</th>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-          <p class="source-note">
-            Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Prozentanteile und
-            Differenzen eigene Berechnung.
-          </p>
-        </div>
-      </div>
-    </section>
+    <section class="panel split-panel" id="bestand"><div class="section-heading compact"><p class="eyebrow">Ist</p><h2>Bestand Genossenschaft</h2></div><div class="split-grid"><div class="chart-card apple-card compact-chart-card"><h3>Verteilung Bestand BG</h3><div class="mini-pie" id="bgPie" role="img" aria-label="Diagramm Wohnungsbestand BG"></div><p class="source-note">Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.</p></div><div class="data-card apple-card full-width-card"><h3>Öffentlich verfügbarer Bestand der BG</h3><div class="table-wrap wide-table"><table id="bgTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil</th><th>Soll</th><th>Differenz zum Soll</th><th>Hinweis</th></tr></thead><tbody></tbody><tfoot><tr><th>Total</th><th>394</th><th>100 %</th><th>100 %</th><th>–</th><th>Referenzbestand</th></tr></tfoot></table></div><p class="source-note">Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Prozentanteile und Differenzen eigene Berechnung.</p></div></div></section>
 
-    <section class="panel collapsed-panel" id="vermietung">
-      <details class="section-disclosure">
-        <summary class="section-summary">
-          <div class="section-heading compact">
-            <p class="eyebrow">Regeln</p>
-            <h2>Vermietungsreglement</h2>
-          </div>
-        </summary>
-        <div class="section-disclosure-body">
-          <div class="rules-grid">
-            <div class="data-card apple-card">
-              <h3>Belegung: maximale Wohnungsgrösse</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Personen</th>
-                      <th>Neuvermietung: max.</th>
-                      <th>Unterbelegt ab</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>1</td><td>68 m²</td><td>70 m²</td></tr>
-                    <tr><td>2</td><td>80 m²</td><td>90 m²</td></tr>
-                    <tr><td>3</td><td>100 m²</td><td>135 m²</td></tr>
-                    <tr><td>4</td><td>130 m²</td><td>145 m²</td></tr>
-                    <tr><td>5</td><td>145 m²</td><td>–</td></tr>
-                    <tr><td>6</td><td>160 m²</td><td>–</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <p class="source-note">
-                Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.1.
-              </p>
-            </div>
-            <div class="data-card apple-card">
-              <h3>Ersatzangebote bei Unterbelegung</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Personen</th>
-                      <th>Wohnungsgrösse Minimum</th>
-                      <th>Zimmerzahl Minimum</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>1</td><td>58 m²</td><td>2</td></tr>
-                    <tr><td>2</td><td>65 m²</td><td>3</td></tr>
-                    <tr><td>3</td><td>80 m²</td><td>3.5</td></tr>
-                    <tr><td>4</td><td>95 m²</td><td>4</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <p class="source-note">
-                Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.3.
-              </p>
-            </div>
-          </div>
-          <div class="callout slim">
-            <strong>Interpretation:</strong> Die Belegungsregeln stützen einen Raster mit genügend
-            2–3.5-Zimmer-Wohnungen für Verkleinerung und weiterhin ausreichend
-            4–4.5-Zimmer-Wohnungen für Familien.
-          </div>
-        </div>
-      </details>
-    </section>
+    <section class="panel collapsed-panel" id="vermietung"><details class="section-disclosure"><summary class="section-summary"><div class="section-heading compact"><p class="eyebrow">Regeln</p><h2>Vermietungsreglement</h2></div></summary><div class="section-disclosure-body"><div class="rules-grid"><div class="data-card apple-card"><h3>Belegung: maximale Wohnungsgrösse</h3><div class="table-wrap"><table><thead><tr><th>Personen</th><th>Neuvermietung: max.</th><th>Unterbelegt ab</th></tr></thead><tbody><tr><td>1</td><td>68 m²</td><td>70 m²</td></tr><tr><td>2</td><td>80 m²</td><td>90 m²</td></tr><tr><td>3</td><td>100 m²</td><td>135 m²</td></tr><tr><td>4</td><td>130 m²</td><td>145 m²</td></tr><tr><td>5</td><td>145 m²</td><td>–</td></tr><tr><td>6</td><td>160 m²</td><td>–</td></tr></tbody></table></div><p class="source-note">Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.1.</p></div><div class="data-card apple-card"><h3>Ersatzangebote bei Unterbelegung</h3><div class="table-wrap"><table><thead><tr><th>Personen</th><th>Wohnungsgrösse Minimum</th><th>Zimmerzahl Minimum</th></tr></thead><tbody><tr><td>1</td><td>58 m²</td><td>2</td></tr><tr><td>2</td><td>65 m²</td><td>3</td></tr><tr><td>3</td><td>80 m²</td><td>3.5</td></tr><tr><td>4</td><td>95 m²</td><td>4</td></tr></tbody></table></div><p class="source-note">Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.3.</p></div></div><div class="callout slim"><strong>Interpretation:</strong> Die Belegungsregeln stützen einen Raster mit genügend 2–3.5-Zimmer-Wohnungen für Verkleinerung und weiterhin ausreichend 4–4.5-Zimmer-Wohnungen für Familien.</div></div></details></section>
 
-    <section class="panel" id="entwicklung">
-      <div class="section-heading compact">
-        <p class="eyebrow">Entwicklung</p>
-        <h2>Zimmerentwicklung Stadt Zürich</h2>
-        <p>Entwicklung pro Zimmerkategorie aus dem lokal gespeicherten Snapshot der offiziellen Open-Data-Quelle.</p>
-      </div>
-      <div class="timeline-grid">
-        <div class="data-card apple-card history-table-card">
-          <h3>Entwicklung nach Zimmerkategorie</h3>
-          <div class="history-toolbar">
-            <div class="history-range-head">
-              <span class="field-label">Zeitachse</span>
-              <span class="history-range-value" id="historyRangeLabel">1930–2025</span>
-            </div>
-            <div class="history-range-grid">
-              <div>
-                <label class="field-label" for="historyStartRange">Startjahr</label>
-                <input type="range" id="historyStartRange" min="1930" max="2025" step="1" value="1930">
-              </div>
-              <div>
-                <label class="field-label" for="historyEndRange">Endjahr</label>
-                <input type="range" id="historyEndRange" min="1930" max="2025" step="1" value="2025">
-              </div>
-            </div>
-          </div>
-          <div id="historyChart" class="line-chart">Daten werden geladen…</div>
-          <p class="source-note">
-            Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert unter
-            <code>data/city-zurich.json</code>.
-          </p>
-        </div>
-        <div class="data-card apple-card">
-          <h3>Wohnungen pro Jahr und Zimmer</h3>
-          <div class="table-wrap">
-            <table id="historyTable">
-              <thead>
-                <tr>
-                  <th>Jahr</th>
-                  <th>1 Zimmer</th>
-                  <th>2 Zimmer</th>
-                  <th>3 Zimmer</th>
-                  <th>4 Zimmer</th>
-                  <th>5 Zimmer</th>
-                  <th>6+ Zimmer</th>
-                </tr>
-              </thead>
-              <tbody><tr><td colspan="7">Daten werden geladen…</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
+    <section class="panel" id="entwicklung"><div class="section-heading compact"><p class="eyebrow">Entwicklung</p><h2>Zimmerentwicklung Stadt Zürich</h2><p>Entwicklung pro Zimmerkategorie aus dem lokal gespeicherten Snapshot der offiziellen Open-Data-Quelle.</p></div><div class="timeline-grid"><div class="data-card apple-card history-table-card"><h3>Entwicklung nach Zimmerkategorie</h3><div class="history-toolbar"><div class="history-range-head"><span class="field-label">Zeitachse</span><span class="history-range-value" id="historyRangeLabel">1930–2025</span></div><div class="history-range-grid"><div><label class="field-label" for="historyStartRange">Startjahr</label><input type="range" id="historyStartRange" min="1930" max="2025" step="1" value="1930"></div><div><label class="field-label" for="historyEndRange">Endjahr</label><input type="range" id="historyEndRange" min="1930" max="2025" step="1" value="2025"></div></div></div><div id="historyChart" class="line-chart">Daten werden geladen…</div><p class="source-note">Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert unter <code>data/city-zurich.json</code>.</p></div><div class="data-card apple-card"><h3>Wohnungen pro Jahr und Zimmer</h3><div class="table-wrap"><table id="historyTable"><thead><tr><th>Jahr</th><th>1 Zimmer</th><th>2 Zimmer</th><th>3 Zimmer</th><th>4 Zimmer</th><th>5 Zimmer</th><th>6+ Zimmer</th></tr></thead><tbody><tr><td colspan="7">Daten werden geladen…</td></tr></tbody></table></div></div></div></section>
 
-    <section class="panel split-panel" id="stadt-zuerich">
-      <div class="section-heading compact">
-        <p class="eyebrow">Vergleich</p>
-        <h2>Wohnungsbestand Stadt Zürich</h2>
-      </div>
-      <div class="split-grid">
-        <div class="chart-card apple-card compact-chart-card">
-          <h3>Verteilung Stadt Zürich</h3>
-          <div class="mini-pie" id="cityPie" role="img" aria-label="Diagramm Wohnungsbestand Stadt Zürich"></div>
-          <p class="source-note" id="citySourceNote">
-            Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert und lokal verwendet.
-          </p>
-        </div>
-        <div class="data-card apple-card city-wide">
-          <h3>Wohnungsbestand Stadt Zürich</h3>
-          <div class="table-wrap">
-            <table id="cityTable">
-              <thead>
-                <tr>
-                  <th>Anzahl Zimmer</th>
-                  <th>Wohnungen</th>
-                  <th>Anteil</th>
-                  <th>Datenjahr</th>
-                </tr>
-              </thead>
-              <tbody><tr><td colspan="4">Daten werden geladen…</td></tr></tbody>
-            </table>
-          </div>
-          <p class="source-note">
-            Quelle: Stadt Zürich, Open Data, BAU506OD5062.csv; als Snapshot im Repo gespeichert
-            und ohne Live-Fetch verwendet.
-          </p>
-        </div>
-      </div>
-    </section>
+    <section class="panel split-panel" id="stadt-zuerich"><div class="section-heading compact"><p class="eyebrow">Vergleich</p><h2>Wohnungsbestand Stadt Zürich</h2></div><div class="split-grid"><div class="chart-card apple-card compact-chart-card"><h3>Verteilung Stadt Zürich</h3><div class="mini-pie" id="cityPie" role="img" aria-label="Diagramm Wohnungsbestand Stadt Zürich"></div><p class="source-note" id="citySourceNote">Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert und lokal verwendet.</p></div><div class="data-card apple-card city-wide"><h3>Wohnungsbestand Stadt Zürich</h3><div class="table-wrap"><table id="cityTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil</th><th>Datenjahr</th></tr></thead><tbody><tr><td colspan="4">Daten werden geladen…</td></tr></tbody></table></div><p class="source-note">Quelle: Stadt Zürich, Open Data, BAU506OD5062.csv; als Snapshot im Repo gespeichert und ohne Live-Fetch verwendet.</p></div></div></section>
 
-    <section class="panel split-panel" id="kanton-zuerich">
-      <div class="section-heading compact">
-        <p class="eyebrow">Vergleich</p>
-        <h2>Wohnungsbestand Kanton Zürich</h2>
-      </div>
-      <div class="split-grid">
-        <div class="chart-card apple-card compact-chart-card">
-          <h3>Verteilung Kanton Zürich</h3>
-          <div class="mini-pie" id="cantonPie" role="img" aria-label="Diagramm Wohnungsbestand Kanton Zürich"></div>
-          <p class="source-note">
-            Quelle: BFS, Wohnungen nach Anzahl Zimmer und Kanton, 2024.
-          </p>
-        </div>
-        <div class="data-card apple-card">
-          <h3>Wohnungsbestand Kanton Zürich</h3>
-          <div class="table-wrap">
-            <table id="cantonTable">
-              <thead>
-                <tr>
-                  <th>Anzahl Zimmer</th>
-                  <th>Anteil Kanton Zürich</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <p class="source-note">
-            Quelle: BFS, Wohnungen nach Anzahl Zimmer und Kanton, 2024; ergänzend Zürcher
-            Gemeinden in Zahlen.
-          </p>
-        </div>
-      </div>
-    </section>
+    <section class="panel split-panel" id="kanton-zuerich"><div class="section-heading compact"><p class="eyebrow">Vergleich</p><h2>Wohnungsbestand Kanton Zürich</h2></div><div class="split-grid"><div class="chart-card apple-card compact-chart-card"><h3>Verteilung Kanton Zürich</h3><div class="mini-pie" id="cantonPie" role="img" aria-label="Diagramm Wohnungsbestand Kanton Zürich"></div><p class="source-note">Quelle: BFS, Wohnungen nach Anzahl Zimmer und Kanton, 2024.</p></div><div class="data-card apple-card"><h3>Wohnungsbestand Kanton Zürich</h3><div class="table-wrap"><table id="cantonTable"><thead><tr><th>Anzahl Zimmer</th><th>Anteil Kanton Zürich</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: BFS, Wohnungen nach Anzahl Zimmer und Kanton, 2024; ergänzend Zürcher Gemeinden in Zahlen.</p></div></div></section>
 
-    <section class="panel split-panel" id="schweiz">
-      <div class="section-heading compact">
-        <p class="eyebrow">Vergleich</p>
-        <h2>Wohnungsbestand Schweiz</h2>
-      </div>
-      <div class="split-grid">
-        <div class="chart-card apple-card compact-chart-card">
-          <h3>Verteilung Schweiz</h3>
-          <div class="mini-pie" id="swissPie" role="img" aria-label="Diagramm Wohnungsbestand Schweiz"></div>
-          <p class="source-note">
-            Quelle: BFS, Gebäude- und Wohnungsstatistik 2024.
-          </p>
-        </div>
-        <div class="data-card apple-card">
-          <h3>Wohnungsbestand Schweiz</h3>
-          <div class="table-wrap">
-            <table id="swissTable">
-              <thead>
-                <tr>
-                  <th>Anzahl Zimmer</th>
-                  <th>Wohnungen</th>
-                  <th>Anteil Schweiz</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <p class="source-note">
-            Quelle: BFS, Gebäude- und Wohnungsstatistik 2024, Wohnungen nach Anzahl der Zimmer.
-          </p>
-        </div>
-      </div>
-    </section>
+    <section class="panel split-panel" id="schweiz"><div class="section-heading compact"><p class="eyebrow">Vergleich</p><h2>Wohnungsbestand Schweiz</h2></div><div class="split-grid"><div class="chart-card apple-card compact-chart-card"><h3>Verteilung Schweiz</h3><div class="mini-pie" id="swissPie" role="img" aria-label="Diagramm Wohnungsbestand Schweiz"></div><p class="source-note">Quelle: BFS, Gebäude- und Wohnungsstatistik 2024.</p></div><div class="data-card apple-card"><h3>Wohnungsbestand Schweiz</h3><div class="table-wrap"><table id="swissTable"><thead><tr><th>Anzahl Zimmer</th><th>Wohnungen</th><th>Anteil Schweiz</th></tr></thead><tbody></tbody></table></div><p class="source-note">Quelle: BFS, Gebäude- und Wohnungsstatistik 2024, Wohnungen nach Anzahl der Zimmer.</p></div></div></section>
+
+    <section class="panel" id="prognose"><div class="section-heading compact"><p class="eyebrow">Prognose</p><h2>Was Zürich künftig brauchen könnte</h2><p>Stadt Zürich publiziert keine direkte Vorgabe für einen exakten Wohnungsmix pro BG. Relevante Hinweise ergeben sich aus Bevölkerungsentwicklung, Haushaltsformen, Altersstruktur, Wohnungsbestand und Quartierstatistik.</p></div><div class="method-grid"><div class="method-card apple-card"><span>01</span><h3>Bevölkerung wächst</h3><p>Zürich wächst weiter. Der künftige Wohnungsmix sollte deshalb nicht nur den heutigen Bestand spiegeln, sondern zusätzliche und veränderte Nachfrage aufnehmen können.</p></div><div class="method-card apple-card"><span>02</span><h3>Haushalte statt Personen</h3><p>Wohnungsbedarf entsteht über Haushalte. Kleine Haushalte, Paare, Alleinerziehende und Familien erzeugen unterschiedliche Wohnungsgrössen.</p></div><div class="method-card apple-card"><span>03</span><h3>Alter und Lebensphasen</h3><p>Alterung und Downsizing sprechen für gut nutzbare kleinere Wohnungen, damit grössere Wohnungen wieder für Familien frei werden.</p></div><div class="method-card apple-card"><span>04</span><h3>Kreis und Quartier prüfen</h3><p>Die ganze Stadt ist nur ein Benchmark. Für eine BG ist die Lage im Kreis und Quartier wichtig, weil Schule, Umfeld und lokale Haushaltsstruktur die Nachfrage prägen.</p></div><div class="method-card apple-card"><span>05</span><h3>Kein fixer amtlicher Mix</h3><p>Die offiziellen Daten liefern Richtung und Plausibilisierung, aber keine direkte Zielquote. Der Soll-Raster bleibt eine fachliche Ableitung.</p></div></div><div class="data-card apple-card full-width-card" style="margin-top:1rem"><h3>Ableitung für den Wohnungsmix</h3><div class="table-wrap wide-table"><table><thead><tr><th>Trend / Datenspur</th><th>Bedeutung für den Raster</th><th>Planerische Konsequenz</th></tr></thead><tbody><tr><td>Bevölkerungswachstum</td><td>Mehr Wohnraum und höhere Nutzungsflexibilität bleiben relevant.</td><td>Bestand nicht nur konservieren, sondern zukunftsfähig mischen.</td></tr><tr><td>Mehr kleine Haushalte</td><td>2–2.5-Zimmer-Wohnungen werden als eigenständiges Segment wichtiger.</td><td>Anteil kleiner Wohnungen gezielt erhöhen.</td></tr><tr><td>Alterung / Verkleinerung</td><td>Attraktive Ersatzwohnungen erleichtern interne Mobilität.</td><td>Barrierearme kleinere Wohnungen stärken.</td></tr><tr><td>Familienbedarf bleibt</td><td>4–4.5-Zimmer-Wohnungen bleiben für Familien zentral.</td><td>Familienwohnungen sichern, aber nicht einseitig ausbauen.</td></tr><tr><td>Dominanz 3–3.5 Zimmer im Bestand</td><td>Ein zu starkes Mittelsegment reduziert Beweglichkeit.</td><td>Raster breiter ausbalancieren.</td></tr></tbody></table></div><p class="source-note">Quellenlogik: Stadt Zürich Bevölkerungs-, Haushalts-, Alters-, Wohnungsbestands- und Quartierstatistiken; Interpretation und Rasterableitung eigene fachliche Einschätzung.</p></div><div class="callout slim"><strong>Schlussfolgerung:</strong> Für die BG ist nicht nur entscheidend, wie viele Personen künftig in Zürich leben, sondern welche Haushaltsphasen der Bestand ermöglichen soll: Familiengründung, interne Rochade, Verkleinerung, Alterung und Ersatzangebote bei Unterbelegung.</div></section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
