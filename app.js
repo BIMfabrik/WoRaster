@@ -39,6 +39,17 @@ const swissRows = [
   { label: '6+ Zimmer', countLabel: "460'000", percent: 9.5 }
 ];
 
+const projectRows = [
+  { label: '2 Zi.-WHG.', count: 7, percent: 5.5 },
+  { label: '2.5 Zi.-WHG.', count: 17, percent: 13.5 },
+  { label: '3 Zi.-WHG.', count: 15, percent: 12.0 },
+  { label: '3.5 Zi.-WHG.', count: 61, percent: 48.0 },
+  { label: '4 Zi.-WHG.', count: 1, percent: 1.0 },
+  { label: '4.5 Zi.-WHG.', count: 22, percent: 17.0 },
+  { label: '5.5 Zi.-WHG.', count: 3, percent: 2.0 },
+  { label: '6.5 Zi.-WHG.', count: 1, percent: 1.0 }
+];
+
 const chartTitles = {
   target: ['Soll', 'Vorschlag'],
   bg: ['Ist', 'BG'],
@@ -540,6 +551,10 @@ function renderBgTable() {
 }
 
 function renderStaticTables() {
+  document.querySelector('#projectTable tbody').innerHTML = projectRows.map((row) => `
+    <tr><td>${row.label}</td><td>${row.count}</td><td>${row.percent.toFixed(1).replace('.0', '')} %</td></tr>
+  `).join('');
+
   document.querySelector('#cantonTable tbody').innerHTML = cantonRows.map((row) => `
     <tr><td>${row.label}</td><td>${row.percent.toFixed(1)} %</td></tr>
   `).join('');
@@ -642,6 +657,7 @@ function renderAll() {
   renderHistory();
   renderMainPie();
   renderOverviewBars();
+  renderMiniPie('projectPie', 'Projekt', projectRows);
   renderMiniPie('bgPie', 'BG', bgRows.map((row) => ({ label: row.rooms, percent: row.percent })));
   if (state.cityData) renderMiniPie('cityPie', 'Stadt', state.cityData.roomRows);
   renderMiniPie('cantonPie', 'Kanton', cantonRows);
