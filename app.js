@@ -421,6 +421,67 @@ function renderMiniPie(id, title, rows) {
   }, true);
 }
 
+function renderOverviewBars() {
+  if (!state.cityData) return;
+
+  const chart = ensureChart('overviewBarChart');
+  const categories = state.targetRows.map((row) => row.rooms);
+  const cityLookup = new Map(state.cityData.roomRows.map((row) => [row.label, row.percent]));
+  const datasets = [
+    { name: 'Soll-Vorschlag', color: '#007aff', values: state.targetRows.map((row) => row.percent) },
+    { name: 'Bestand BG', color: '#34c759', values: bgRows.map((row) => row.percent) },
+    { name: 'Stadt Zürich', color: '#5ac8fa', values: [cityLookup.get('1 Zimmer') || 0, cityLookup.get('2 Zimmer') || 0, cityLookup.get('3 Zimmer') || 0, cityLookup.get('4 Zimmer') || 0, cityLookup.get('5 Zimmer') || 0, cityLookup.get('6+ Zimmer') || 0] },
+    { name: 'Kanton Zürich', color: '#ff9500', values: cantonRows.map((row) => row.percent) },
+    { name: 'Schweiz', color: '#af52de', values: swissRows.map((row) => row.percent) }
+  ];
+
+  chart.setOption({
+    animationDuration: 500,
+    grid: { left: 56, right: 18, top: 26, bottom: 56 },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      borderWidth: 0,
+      backgroundColor: 'rgba(29,29,31,.92)',
+      textStyle: { color: '#fff', fontFamily: 'Inter, sans-serif' }
+    },
+    legend: {
+      top: 0,
+      left: 'center',
+      itemWidth: 10,
+      itemHeight: 10,
+      icon: 'circle',
+      textStyle: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
+    },
+    xAxis: {
+      type: 'category',
+      data: categories,
+      axisLine: { lineStyle: { color: '#d2d2d7' } },
+      axisTick: { show: false },
+      axisLabel: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
+    },
+    yAxis: {
+      type: 'value',
+      name: 'Anteil in %',
+      nameTextStyle: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' },
+      splitLine: { lineStyle: { color: '#ececf0' } },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
+    },
+    series: datasets.map((dataset) => ({
+      name: dataset.name,
+      type: 'bar',
+      barMaxWidth: 28,
+      itemStyle: {
+        color: dataset.color,
+        borderRadius: [8, 8, 0, 0]
+      },
+      data: dataset.values
+    }))
+  }, true);
+}
+
 function renderTargetTable() {
   const body = document.querySelector('#targetTable tbody');
   body.innerHTML = state.targetRows.map((row, index) => `
@@ -580,6 +641,7 @@ function renderAll() {
   renderCityTables();
   renderHistory();
   renderMainPie();
+  renderOverviewBars();
   renderMiniPie('bgPie', 'BG', bgRows.map((row) => ({ label: row.rooms, percent: row.percent })));
   if (state.cityData) renderMiniPie('cityPie', 'Stadt', state.cityData.roomRows);
   renderMiniPie('cantonPie', 'Kanton', cantonRows);
