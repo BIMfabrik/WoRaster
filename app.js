@@ -1,15 +1,15 @@
-const STORAGE_KEY = 'woraster-target-state-v1';
-const TOTAL_APARTMENTS = 394;
+const STORAGE_KEY = 'woraster-target-state-v2';
+const DEFAULT_TOTAL_APARTMENTS = 394;
 const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
 const COMPARE_COLORS = ['#80bdff', '#8ee0a5', '#ffe680', '#ffc580', '#d7a8ef', '#ade3fc'];
 
 const targetDefaults = [
-  { rooms: '1–1.5', percent: 4, corridor: '3–5 %', targetCount: 16, function: 'gezielte kleine Einheiten', note: 'klein halten' },
-  { rooms: '2–2.5', percent: 20, corridor: '18–22 %', targetCount: 79, function: 'Verkleinerung, ältere Personen, kleine Haushalte', note: 'deutlich erhöhen' },
-  { rooms: '3–3.5', percent: 44, corridor: '42–46 %', targetCount: 173, function: 'Hauptsegment', note: 'reduzieren' },
-  { rooms: '4–4.5', percent: 24, corridor: '22–26 %', targetCount: 95, function: 'Familien', note: 'stärken' },
-  { rooms: '5–5.5', percent: 7, corridor: '7–9 %', targetCount: 28, function: 'grössere Familien', note: 'stabil' },
-  { rooms: '6–6.5', percent: 1, corridor: '1–2 %', targetCount: 4, function: 'Ausnahmebestand', note: 'Ausnahme' }
+  { rooms: '1–1.5', percent: 4, corridor: '3–5 %', function: 'gezielte kleine Einheiten', note: 'klein halten' },
+  { rooms: '2–2.5', percent: 20, corridor: '18–22 %', function: 'Verkleinerung, ältere Personen, kleine Haushalte', note: 'deutlich erhöhen' },
+  { rooms: '3–3.5', percent: 44, corridor: '42–46 %', function: 'Hauptsegment', note: 'reduzieren' },
+  { rooms: '4–4.5', percent: 24, corridor: '22–26 %', function: 'Familien', note: 'stärken' },
+  { rooms: '5–5.5', percent: 7, corridor: '7–9 %', function: 'grössere Familien', note: 'stabil' },
+  { rooms: '6–6.5', percent: 1, corridor: '1–2 %', function: 'Ausnahmebestand', note: 'Ausnahme' }
 ];
 
 const bgRows = [
@@ -57,29 +57,24 @@ const chartTitles = {
 };
 
 const state = {
-  targetRows: structuredClone(targetDefaults),
+  targetRows: cloneRows(targetDefaults),
+  totalApartments: DEFAULT_TOTAL_APARTMENTS,
   chartType: 'target',
   compareType: 'bg',
+  historyRoom: '3 Zimmer',
   cityData: null,
   dirty: false
 };
 
 const pieCharts = {};
 
-function structuredCloneFallback(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
 function cloneRows(rows) {
-  if (typeof structuredClone === 'function') {
-    return structuredClone(rows);
-  }
-  return structuredCloneFallback(rows);
+  return JSON.parse(JSON.stringify(rows));
 }
 
 function recalculateTargetCounts() {
   state.targetRows.forEach((row) => {
-    row.targetCount = Math.round((row.percent / 100) * TOTAL_APARTMENTS);
+    row.targetCount = Math.round((row.percent / 100) * state.totalApartments);
   });
 }
 
@@ -107,21 +102,13 @@ function normalizePercents(editedIndex, nextValue) {
   } else {
     const weighted = otherIndexes.map((index) => {
       const raw = (currentTenths[index] / otherTotal) * remainingTenths;
-      return {
-        index,
-        base: Math.floor(raw),
-        fraction: raw - Math.floor(raw)
-      };
+      return { index, base: Math.floor(raw), fraction: raw - Math.floor(raw) };
     });
-
-    let assigned = weighted.reduce((sum, item) => sum + item.base, 0);
-    let remainder = remainingTenths - assigned;
-    weighted
-      .sort((a, b) => b.fraction - a.fraction)
-      .forEach((item) => {
-        nextTenthsValues[item.index] = item.base + (remainder > 0 ? 1 : 0);
-        if (remainder > 0) remainder -= 1;
-      });
+    let remainder = remainingTenths - weighted.reduce((sum, item) => sum + item.base, 0);
+    weighted.sort((a, b) => b.fraction - a.fraction).forEach((item) => {
+      nextTenthsValues[item.index] = item.base + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder -= 1;
+    });
   }
 
   state.targetRows.forEach((row, index) => {
@@ -131,8 +118,10 @@ function normalizePercents(editedIndex, nextValue) {
 
 function saveState() {
   const payload = {
+    totalApartments: state.totalApartments,
     chartType: state.chartType,
     compareType: state.compareType,
+    historyRoom: state.historyRoom,
     targetRows: state.targetRows.map((row) => ({
       rooms: row.rooms,
       percent: row.percent,
@@ -155,17 +144,19 @@ function loadState() {
 
   try {
     const parsed = JSON.parse(saved);
-    const mergedRows = cloneRows(targetDefaults).map((row, index) => ({
+    state.totalApartments = Number(parsed.totalApartments) > 0 ? Number(parsed.totalApartments) : DEFAULT_TOTAL_APARTMENTS;
+    state.chartType = parsed.chartType || 'target';
+    state.compareType = parsed.compareType || 'bg';
+    state.historyRoom = parsed.historyRoom || '3 Zimmer';
+    state.targetRows = cloneRows(targetDefaults).map((row, index) => ({
       ...row,
       ...(parsed.targetRows?.[index] || {})
     }));
-    state.targetRows = mergedRows;
-    state.chartType = parsed.chartType || 'target';
-    state.compareType = parsed.compareType || 'bg';
     recalculateTargetCounts();
     updateStatus('Lokale Version geladen.');
   } catch {
     state.targetRows = cloneRows(targetDefaults);
+    state.totalApartments = DEFAULT_TOTAL_APARTMENTS;
     recalculateTargetCounts();
     updateStatus('Gespeicherte Version konnte nicht gelesen werden.');
   }
@@ -173,12 +164,14 @@ function loadState() {
 
 function resetState() {
   state.targetRows = cloneRows(targetDefaults);
+  state.totalApartments = DEFAULT_TOTAL_APARTMENTS;
   state.chartType = 'target';
   state.compareType = 'bg';
+  state.historyRoom = '3 Zimmer';
   recalculateTargetCounts();
   localStorage.removeItem(STORAGE_KEY);
   state.dirty = false;
-  syncSelects();
+  syncControls();
   renderAll();
   updateStatus('Auf Standardwerte zurückgesetzt.');
 }
@@ -193,9 +186,12 @@ function markDirty() {
   updateStatus('Ungespeicherte Änderungen.');
 }
 
-function syncSelects() {
+function syncControls() {
   document.getElementById('chartSelect').value = state.chartType;
   document.getElementById('compareSelect').value = state.compareType;
+  document.getElementById('historyRoomSelect').value = state.historyRoom;
+  document.getElementById('totalApartments').value = state.totalApartments;
+  document.getElementById('apartmentsHeaderLabel').textContent = String(state.totalApartments);
 }
 
 function toPieRows(type) {
@@ -207,7 +203,7 @@ function toPieRows(type) {
   return [];
 }
 
-function ensureChart(id, size = 'full') {
+function ensureChart(id) {
   if (pieCharts[id]) return pieCharts[id];
   const element = document.getElementById(id);
   pieCharts[id] = echarts.init(element, null, { renderer: 'svg' });
@@ -288,7 +284,7 @@ function renderMainPie() {
       {
         type: 'text',
         left: 'center',
-        top: hasCompare ? '39%' : '42%',
+        top: state.compareType !== 'none' && state.compareType !== state.chartType ? '39%' : '42%',
         style: {
           text: line1,
           fill: '#1d1d1f',
@@ -301,7 +297,7 @@ function renderMainPie() {
       {
         type: 'text',
         left: 'center',
-        top: hasCompare ? '49%' : '52%',
+        top: state.compareType !== 'none' && state.compareType !== state.chartType ? '49%' : '52%',
         style: {
           text: line2,
           fill: '#6e6e73',
@@ -470,9 +466,10 @@ function renderCityTables() {
 
 function renderHistory() {
   if (!state.cityData) return;
-  const rows = [...state.cityData.historyRows].sort((a, b) => a.year - b.year);
+  const roomSeries = state.cityData.roomHistoryRows.find((entry) => entry.label === state.historyRoom)?.series || [];
+  const rows = [...roomSeries].sort((a, b) => a.year - b.year);
   const recent = rows.slice(-8);
-  const values = rows.map((row) => row.total);
+  const values = rows.map((row) => row.count);
   const min = Math.min(...values);
   const max = Math.max(...values);
   const width = 760;
@@ -480,7 +477,7 @@ function renderHistory() {
   const padding = 34;
   const points = rows.map((row, index) => {
     const x = padding + (index / Math.max(rows.length - 1, 1)) * (width - padding * 2);
-    const y = height - padding - ((row.total - min) / Math.max(max - min, 1)) * (height - padding * 2);
+    const y = height - padding - ((row.count - min) / Math.max(max - min, 1)) * (height - padding * 2);
     return { ...row, x, y };
   });
 
@@ -498,21 +495,21 @@ function renderHistory() {
       <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#e5e5ea" />
       ${points.map((point) => `
         <circle cx="${point.x}" cy="${point.y}" r="3.5" fill="#007aff">
-          <title>${point.year}: ${point.total.toLocaleString('de-CH')}</title>
+          <title>${point.year}: ${point.count.toLocaleString('de-CH')}</title>
         </circle>
       `).join('')}
-      <text x="${padding}" y="22" class="svg-label">${rows[0].year}</text>
-      <text x="${width - padding}" y="22" text-anchor="end" class="svg-label">${rows[rows.length - 1].year}</text>
+      <text x="${padding}" y="22" class="svg-label">${rows[0]?.year || ''}</text>
+      <text x="${width - padding}" y="22" text-anchor="end" class="svg-label">${rows[rows.length - 1]?.year || ''}</text>
     </svg>
   `;
 
   document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map((row) => {
     const previous = rows.find((entry) => entry.year === row.year - 1);
-    const diff = previous ? row.total - previous.total : null;
+    const diff = previous ? row.count - previous.count : null;
     return `
       <tr>
         <td>${row.year}</td>
-        <td>${row.total.toLocaleString('de-CH')}</td>
+        <td>${row.count.toLocaleString('de-CH')}</td>
         <td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td>
       </tr>
     `;
@@ -520,7 +517,7 @@ function renderHistory() {
 }
 
 function renderAll() {
-  syncSelects();
+  syncControls();
   renderTargetTable();
   renderBgTable();
   renderStaticTables();
@@ -569,6 +566,15 @@ async function loadCityData() {
   state.cityData = await response.json();
 }
 
+function handleTotalApartmentsInput(event) {
+  const nextValue = Number(event.target.value);
+  if (Number.isNaN(nextValue) || nextValue <= 0) return;
+  state.totalApartments = Math.round(nextValue);
+  recalculateTargetCounts();
+  renderAll();
+  markDirty();
+}
+
 async function init() {
   loadState();
 
@@ -584,6 +590,13 @@ async function init() {
     markDirty();
   });
 
+  document.getElementById('historyRoomSelect').addEventListener('change', (event) => {
+    state.historyRoom = event.target.value;
+    renderHistory();
+    markDirty();
+  });
+
+  document.getElementById('totalApartments').addEventListener('input', handleTotalApartmentsInput);
   document.querySelector('#targetTable tbody').addEventListener('input', handleTargetTableInput);
   document.getElementById('saveTargetRows').addEventListener('click', saveState);
   document.getElementById('resetTargetRows').addEventListener('click', resetState);

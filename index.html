@@ -28,7 +28,6 @@
       <a href="#stadt-zuerich">Stadt Zürich</a>
       <a href="#kanton-zuerich">Kanton Zürich</a>
       <a href="#schweiz">Schweiz</a>
-      <a href="#methodik">Methodik</a>
     </nav>
   </header>
 
@@ -77,17 +76,23 @@
     </section>
 
     <section class="panel target-panel" id="zielraster">
-      <div class="section-heading compact target-heading">
-        <div>
+      <div class="section-heading compact target-heading centered">
+        <div class="target-heading-main">
           <p class="eyebrow">Soll</p>
           <h2>Vorschlag Soll-Raster</h2>
         </div>
-        <div class="target-actions">
+      </div>
+      <p class="target-status" id="targetStatus">Noch nicht lokal gespeichert.</p>
+      <div class="target-controls">
+        <div class="target-controls-left">
+          <label class="field-label" for="totalApartments">Anzahl Wohnungen</label>
+          <input type="number" id="totalApartments" class="total-apartments-input" min="1" step="1" value="394">
+        </div>
+        <div class="target-actions lower">
           <button type="button" id="saveTargetRows" class="action-button primary">Speichern</button>
           <button type="button" id="resetTargetRows" class="action-button secondary">Zurücksetzen</button>
         </div>
       </div>
-      <p class="target-status" id="targetStatus">Noch nicht lokal gespeichert.</p>
       <div class="table-wrap wide-table target-table-wrap">
         <table id="targetTable">
           <thead>
@@ -95,7 +100,7 @@
               <th>Anzahl Zimmer</th>
               <th>Prozent</th>
               <th>Zielkorridor</th>
-              <th class="th-wrap">Zielanzahl bei 394 Wohnungen</th>
+              <th class="th-wrap">Zielanzahl bei <span id="apartmentsHeaderLabel">394</span> Wohnungen</th>
               <th>Funktion</th>
             </tr>
           </thead>
@@ -157,77 +162,94 @@
       </div>
     </section>
 
-    <section class="panel" id="vermietung">
-      <div class="section-heading compact">
-        <p class="eyebrow">Regeln</p>
-        <h2>Vermietungsreglement</h2>
-      </div>
-      <div class="rules-grid">
-        <div class="data-card apple-card">
-          <h3>Belegung: maximale Wohnungsgrösse</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Personen</th>
-                  <th>Neuvermietung: max.</th>
-                  <th>Unterbelegt ab</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>1</td><td>68 m²</td><td>70 m²</td></tr>
-                <tr><td>2</td><td>80 m²</td><td>90 m²</td></tr>
-                <tr><td>3</td><td>100 m²</td><td>135 m²</td></tr>
-                <tr><td>4</td><td>130 m²</td><td>145 m²</td></tr>
-                <tr><td>5</td><td>145 m²</td><td>–</td></tr>
-                <tr><td>6</td><td>160 m²</td><td>–</td></tr>
-              </tbody>
-            </table>
+    <section class="panel collapsed-panel" id="vermietung">
+      <details class="section-disclosure">
+        <summary class="section-summary">
+          <div class="section-heading compact">
+            <p class="eyebrow">Regeln</p>
+            <h2>Vermietungsreglement</h2>
           </div>
-          <p class="source-note">
-            Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.1.
-          </p>
-        </div>
-        <div class="data-card apple-card">
-          <h3>Ersatzangebote bei Unterbelegung</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Personen</th>
-                  <th>Wohnungsgrösse Minimum</th>
-                  <th>Zimmerzahl Minimum</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>1</td><td>58 m²</td><td>2</td></tr>
-                <tr><td>2</td><td>65 m²</td><td>3</td></tr>
-                <tr><td>3</td><td>80 m²</td><td>3.5</td></tr>
-                <tr><td>4</td><td>95 m²</td><td>4</td></tr>
-              </tbody>
-            </table>
+        </summary>
+        <div class="section-disclosure-body">
+          <div class="rules-grid">
+            <div class="data-card apple-card">
+              <h3>Belegung: maximale Wohnungsgrösse</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Personen</th>
+                      <th>Neuvermietung: max.</th>
+                      <th>Unterbelegt ab</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>68 m²</td><td>70 m²</td></tr>
+                    <tr><td>2</td><td>80 m²</td><td>90 m²</td></tr>
+                    <tr><td>3</td><td>100 m²</td><td>135 m²</td></tr>
+                    <tr><td>4</td><td>130 m²</td><td>145 m²</td></tr>
+                    <tr><td>5</td><td>145 m²</td><td>–</td></tr>
+                    <tr><td>6</td><td>160 m²</td><td>–</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="source-note">
+                Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.1.
+              </p>
+            </div>
+            <div class="data-card apple-card">
+              <h3>Ersatzangebote bei Unterbelegung</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Personen</th>
+                      <th>Wohnungsgrösse Minimum</th>
+                      <th>Zimmerzahl Minimum</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>58 m²</td><td>2</td></tr>
+                    <tr><td>2</td><td>65 m²</td><td>3</td></tr>
+                    <tr><td>3</td><td>80 m²</td><td>3.5</td></tr>
+                    <tr><td>4</td><td>95 m²</td><td>4</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="source-note">
+                Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.3.
+              </p>
+            </div>
           </div>
-          <p class="source-note">
-            Quelle: Vermietungsreglement BG, gültig ab 1.11.2025, Art. 8.3.
-          </p>
+          <div class="callout slim">
+            <strong>Interpretation:</strong> Die Belegungsregeln stützen einen Raster mit genügend
+            2–3.5-Zimmer-Wohnungen für Verkleinerung und weiterhin ausreichend
+            4–4.5-Zimmer-Wohnungen für Familien.
+          </div>
         </div>
-      </div>
-      <div class="callout slim">
-        <strong>Interpretation:</strong> Die Belegungsregeln stützen einen Raster mit genügend
-        2–3.5-Zimmer-Wohnungen für Verkleinerung und weiterhin ausreichend
-        4–4.5-Zimmer-Wohnungen für Familien.
-      </div>
+      </details>
     </section>
 
     <section class="panel" id="entwicklung">
       <div class="section-heading compact">
         <p class="eyebrow">Entwicklung</p>
-        <h2>Wohnungsbestand Stadt Zürich</h2>
-        <p>Zeitreihe aus dem lokal gespeicherten Snapshot der offiziellen Open-Data-Quelle.</p>
+        <h2>Zimmerentwicklung Stadt Zürich</h2>
+        <p>Entwicklung pro Zimmerkategorie aus dem lokal gespeicherten Snapshot der offiziellen Open-Data-Quelle.</p>
       </div>
       <div class="timeline-grid">
         <div class="data-card apple-card">
-          <h3>Gesamtbestand nach Jahr</h3>
+          <h3>Entwicklung nach Zimmerkategorie</h3>
+          <div class="history-toolbar">
+            <label class="field-label" for="historyRoomSelect">Zimmerkategorie</label>
+            <select id="historyRoomSelect">
+              <option value="1 Zimmer">1 Zimmer</option>
+              <option value="2 Zimmer">2 Zimmer</option>
+              <option value="3 Zimmer">3 Zimmer</option>
+              <option value="4 Zimmer">4 Zimmer</option>
+              <option value="5 Zimmer">5 Zimmer</option>
+              <option value="6+ Zimmer">6+ Zimmer</option>
+            </select>
+          </div>
           <div id="historyChart" class="line-chart">Daten werden geladen…</div>
           <p class="source-note">
             Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert unter
@@ -241,7 +263,7 @@
               <thead>
                 <tr>
                   <th>Jahr</th>
-                  <th>Wohnungen total</th>
+                  <th>Wohnungen</th>
                   <th>Veränderung</th>
                 </tr>
               </thead>
@@ -352,30 +374,6 @@
           <p class="source-note">
             Quelle: BFS, Gebäude- und Wohnungsstatistik 2024, Wohnungen nach Anzahl der Zimmer.
           </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel" id="methodik">
-      <div class="section-heading compact">
-        <p class="eyebrow">Methodik</p>
-        <h2>Lesart</h2>
-      </div>
-      <div class="method-grid">
-        <div class="method-card apple-card">
-          <span>01</span>
-          <h3>Nicht Durchschnitt kopieren</h3>
-          <p>Ein genossenschaftlicher Raster muss den Zweck der BG abbilden, nicht den Markt spiegeln.</p>
-        </div>
-        <div class="method-card apple-card">
-          <span>02</span>
-          <h3>Interne Mobilität</h3>
-          <p>Kleinere Wohnungen ermöglichen Verkleinerung und machen grössere Wohnungen wieder passend verfügbar.</p>
-        </div>
-        <div class="method-card apple-card">
-          <span>03</span>
-          <h3>Familien sichern</h3>
-          <p>4–4.5 Zimmer bleiben wichtig, müssen aber mit kleineren Einheiten ausbalanciert werden.</p>
         </div>
       </div>
     </section>

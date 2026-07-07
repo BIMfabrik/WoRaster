@@ -206,7 +206,7 @@
   #bgTable tfoot th:nth-child(6)::before { content: 'Hinweis'; }
 
   #historyTable tbody td:nth-child(1)::before { content: 'Jahr'; }
-  #historyTable tbody td:nth-child(2)::before { content: 'Total'; }
+  #historyTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }
   #historyTable tbody td:nth-child(3)::before { content: 'Veränderung'; }
 
   #cityTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
