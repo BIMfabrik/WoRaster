@@ -81,7 +81,6 @@
 
   .chart-card,
   .data-card,
-  .method-card,
   .callout,
   .control-panel {
     padding: 0.85rem;
@@ -117,6 +116,18 @@
 
   .line-chart {
     min-height: 210px;
+  }
+
+  .main-pie-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-side-legend {
+    order: 2;
+  }
+
+  .legend-item {
+    font-size: 0.84rem;
   }
 
   .source-note,
@@ -206,8 +217,12 @@
   #bgTable tfoot th:nth-child(6)::before { content: 'Hinweis'; }
 
   #historyTable tbody td:nth-child(1)::before { content: 'Jahr'; }
-  #historyTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }
-  #historyTable tbody td:nth-child(3)::before { content: 'Veränderung'; }
+  #historyTable tbody td:nth-child(2)::before { content: '1 Zimmer'; }
+  #historyTable tbody td:nth-child(3)::before { content: '2 Zimmer'; }
+  #historyTable tbody td:nth-child(4)::before { content: '3 Zimmer'; }
+  #historyTable tbody td:nth-child(5)::before { content: '4 Zimmer'; }
+  #historyTable tbody td:nth-child(6)::before { content: '5 Zimmer'; }
+  #historyTable tbody td:nth-child(7)::before { content: '6+ Zimmer'; }
 
   #cityTable tbody td:nth-child(1)::before { content: 'Zimmer'; }
   #cityTable tbody td:nth-child(2)::before { content: 'Wohnungen'; }

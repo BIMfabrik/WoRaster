@@ -41,7 +41,7 @@
       <div class="control-panel apple-card">
         <div class="control-panel-header">
           <p class="diagram-note">
-            Innenring = aktive Hauptsicht. Aussenring = optionale Vergleichsquelle.
+            Innenring = Soll-Vorschlag. Aussenring = optionale Vergleichsquelle.
           </p>
         </div>
         <div class="chart-toolbar compare-toolbar">
@@ -70,8 +70,10 @@
       </div>
 
       <div class="chart-card apple-card chart-card-main">
-        <div class="echart-donut" id="mainPie" role="img" aria-label="Diagramm Wohnungsmix mit Vergleichsring"></div>
-        <p class="source-note" id="chartSource"></p>
+        <div class="main-pie-layout">
+          <div class="echart-donut" id="mainPie" role="img" aria-label="Diagramm Wohnungsmix mit Vergleichsring"></div>
+          <div class="chart-side-legend" id="chartLegend" aria-label="Legende"></div>
+        </div>
       </div>
     </section>
 
@@ -240,15 +242,20 @@
         <div class="data-card apple-card">
           <h3>Entwicklung nach Zimmerkategorie</h3>
           <div class="history-toolbar">
-            <label class="field-label" for="historyRoomSelect">Zimmerkategorie</label>
-            <select id="historyRoomSelect">
-              <option value="1 Zimmer">1 Zimmer</option>
-              <option value="2 Zimmer">2 Zimmer</option>
-              <option value="3 Zimmer">3 Zimmer</option>
-              <option value="4 Zimmer">4 Zimmer</option>
-              <option value="5 Zimmer">5 Zimmer</option>
-              <option value="6+ Zimmer">6+ Zimmer</option>
-            </select>
+            <div class="history-range-head">
+              <span class="field-label">Zeitachse</span>
+              <span class="history-range-value" id="historyRangeLabel">1930–2025</span>
+            </div>
+            <div class="history-range-grid">
+              <div>
+                <label class="field-label" for="historyStartRange">Startjahr</label>
+                <input type="range" id="historyStartRange" min="1930" max="2025" step="1" value="1930">
+              </div>
+              <div>
+                <label class="field-label" for="historyEndRange">Endjahr</label>
+                <input type="range" id="historyEndRange" min="1930" max="2025" step="1" value="2025">
+              </div>
+            </div>
           </div>
           <div id="historyChart" class="line-chart">Daten werden geladen…</div>
           <p class="source-note">
@@ -257,17 +264,21 @@
           </p>
         </div>
         <div class="data-card apple-card">
-          <h3>Letzte Jahre</h3>
+          <h3>Wohnungen pro Jahr und Zimmer</h3>
           <div class="table-wrap">
             <table id="historyTable">
               <thead>
                 <tr>
                   <th>Jahr</th>
-                  <th>Wohnungen</th>
-                  <th>Veränderung</th>
+                  <th>1 Zimmer</th>
+                  <th>2 Zimmer</th>
+                  <th>3 Zimmer</th>
+                  <th>4 Zimmer</th>
+                  <th>5 Zimmer</th>
+                  <th>6+ Zimmer</th>
                 </tr>
               </thead>
-              <tbody><tr><td colspan="3">Daten werden geladen…</td></tr></tbody>
+              <tbody><tr><td colspan="7">Daten werden geladen…</td></tr></tbody>
             </table>
           </div>
         </div>

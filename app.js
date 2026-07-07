@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'woraster-target-state-v2';
+const STORAGE_KEY = 'woraster-target-state-v3';
 const DEFAULT_TOTAL_APARTMENTS = 394;
 const COLORS = ['#007aff', '#34c759', '#ffcc00', '#ff9500', '#af52de', '#5ac8fa'];
 const COMPARE_COLORS = ['#80bdff', '#8ee0a5', '#ffe680', '#ffc580', '#d7a8ef', '#ade3fc'];
@@ -39,15 +39,6 @@ const swissRows = [
   { label: '6+ Zimmer', countLabel: "460'000", percent: 9.5 }
 ];
 
-const chartMeta = {
-  target: 'Quelle: eigene fachliche Ableitung. Kein amtlicher Sollwert.',
-  bg: 'Quelle: öffentliches Liegenschaftenverzeichnis 2023 der BG; Anteile eigene Berechnung.',
-  city: 'Quelle: Snapshot aus BAU506OD5062.csv, im Repo gespeichert.',
-  canton: 'Quelle: BFS / Kanton Zürich 2024; Werte als Referenzanteile.',
-  swiss: 'Quelle: BFS Gebäude- und Wohnungsstatistik 2024; Werte gerundet.',
-  none: ''
-};
-
 const chartTitles = {
   target: ['Soll', 'Vorschlag'],
   bg: ['Ist', 'BG'],
@@ -61,7 +52,8 @@ const state = {
   totalApartments: DEFAULT_TOTAL_APARTMENTS,
   chartType: 'target',
   compareType: 'bg',
-  historyRoom: '3 Zimmer',
+  historyStartYear: 1930,
+  historyEndYear: 2025,
   cityData: null,
   dirty: false
 };
@@ -121,7 +113,8 @@ function saveState() {
     totalApartments: state.totalApartments,
     chartType: state.chartType,
     compareType: state.compareType,
-    historyRoom: state.historyRoom,
+    historyStartYear: state.historyStartYear,
+    historyEndYear: state.historyEndYear,
     targetRows: state.targetRows.map((row) => ({
       rooms: row.rooms,
       percent: row.percent,
@@ -147,7 +140,8 @@ function loadState() {
     state.totalApartments = Number(parsed.totalApartments) > 0 ? Number(parsed.totalApartments) : DEFAULT_TOTAL_APARTMENTS;
     state.chartType = parsed.chartType || 'target';
     state.compareType = parsed.compareType || 'bg';
-    state.historyRoom = parsed.historyRoom || '3 Zimmer';
+    state.historyStartYear = Number(parsed.historyStartYear) || 1930;
+    state.historyEndYear = Number(parsed.historyEndYear) || 2025;
     state.targetRows = cloneRows(targetDefaults).map((row, index) => ({
       ...row,
       ...(parsed.targetRows?.[index] || {})
@@ -157,6 +151,8 @@ function loadState() {
   } catch {
     state.targetRows = cloneRows(targetDefaults);
     state.totalApartments = DEFAULT_TOTAL_APARTMENTS;
+    state.historyStartYear = 1930;
+    state.historyEndYear = 2025;
     recalculateTargetCounts();
     updateStatus('Gespeicherte Version konnte nicht gelesen werden.');
   }
@@ -167,7 +163,8 @@ function resetState() {
   state.totalApartments = DEFAULT_TOTAL_APARTMENTS;
   state.chartType = 'target';
   state.compareType = 'bg';
-  state.historyRoom = '3 Zimmer';
+  state.historyStartYear = 1930;
+  state.historyEndYear = 2025;
   recalculateTargetCounts();
   localStorage.removeItem(STORAGE_KEY);
   state.dirty = false;
@@ -189,9 +186,11 @@ function markDirty() {
 function syncControls() {
   document.getElementById('chartSelect').value = state.chartType;
   document.getElementById('compareSelect').value = state.compareType;
-  document.getElementById('historyRoomSelect').value = state.historyRoom;
   document.getElementById('totalApartments').value = state.totalApartments;
   document.getElementById('apartmentsHeaderLabel').textContent = String(state.totalApartments);
+  document.getElementById('historyStartRange').value = String(state.historyStartYear);
+  document.getElementById('historyEndRange').value = String(state.historyEndYear);
+  document.getElementById('historyRangeLabel').textContent = `${state.historyStartYear}–${state.historyEndYear}`;
 }
 
 function toPieRows(type) {
@@ -255,9 +254,11 @@ function renderMainPie() {
   const mainRows = toPieRows(state.chartType);
   const compareRows = hasCompare ? toPieRows(state.compareType) : [];
   const [line1, line2] = chartTitles[state.chartType] || ['', ''];
+  const detailLines = mainRows.map((row) => `${row.name} ${Number(row.value).toFixed(1).replace('.0', '')}%`).join('\n');
+
   const series = hasCompare
     ? [
-        createPieSeries(`Innen: ${line1} ${line2}`, mainRows, ['38%', '57%'], COLORS, false),
+        createPieSeries(`Innen: ${line1} ${line2}`, mainRows, ['38%', '57%'], COLORS, true),
         createPieSeries(`Aussen: ${(chartTitles[state.compareType] || [state.compareType, '']).join(' ')}`, compareRows, ['64%', '84%'], COMPARE_COLORS, true)
       ]
     : [createPieSeries(`${line1} ${line2}`, mainRows, ['54%', '78%'], COLORS, true)];
@@ -272,19 +273,12 @@ function renderMainPie() {
       textStyle: { color: '#fff', fontFamily: 'Inter, sans-serif' },
       formatter: (params) => `${params.seriesName}<br>${params.marker}${params.name}: <b>${Number(params.value).toFixed(1).replace('.0', '')}%</b>`
     },
-    legend: {
-      bottom: 0,
-      left: 'center',
-      itemWidth: 10,
-      itemHeight: 10,
-      icon: 'circle',
-      textStyle: { color: '#6e6e73', fontSize: 12, fontFamily: 'Inter, sans-serif' }
-    },
+    legend: { show: false },
     graphic: [
       {
         type: 'text',
         left: 'center',
-        top: state.compareType !== 'none' && state.compareType !== state.chartType ? '39%' : '42%',
+        top: hasCompare ? '35%' : '38%',
         style: {
           text: line1,
           fill: '#1d1d1f',
@@ -297,7 +291,7 @@ function renderMainPie() {
       {
         type: 'text',
         left: 'center',
-        top: state.compareType !== 'none' && state.compareType !== state.chartType ? '49%' : '52%',
+        top: hasCompare ? '45%' : '48%',
         style: {
           text: line2,
           fill: '#6e6e73',
@@ -306,15 +300,59 @@ function renderMainPie() {
           fontFamily: 'Inter, sans-serif',
           textAlign: 'center'
         }
+      },
+      {
+        type: 'text',
+        left: 'center',
+        top: hasCompare ? '53%' : '56%',
+        style: {
+          text: detailLines,
+          fill: '#6e6e73',
+          fontSize: 10,
+          fontWeight: 600,
+          fontFamily: 'Inter, sans-serif',
+          textAlign: 'center',
+          lineHeight: 15
+        }
       }
     ],
     series
   }, true);
 
-  const source = hasCompare
-    ? `${chartMeta[state.chartType]} Vergleich Aussenring: ${chartMeta[state.compareType]}`
-    : chartMeta[state.chartType];
-  document.getElementById('chartSource').textContent = source;
+  renderMainLegend(mainRows, compareRows, hasCompare);
+}
+
+function renderMainLegend(mainRows, compareRows, hasCompare) {
+  const legend = document.getElementById('chartLegend');
+  if (!legend) return;
+
+  const mainTitle = chartTitles[state.chartType].join(' ');
+  const compareTitle = hasCompare ? chartTitles[state.compareType].join(' ') : '';
+
+  legend.innerHTML = `
+    <div class="legend-group">
+      <div class="legend-group-title">Innenring · ${mainTitle}</div>
+      ${mainRows.map((row, index) => `
+        <div class="legend-item">
+          <span class="legend-dot" style="background:${COLORS[index % COLORS.length]}"></span>
+          <span class="legend-label">${row.name}</span>
+          <span class="legend-value">${Number(row.value).toFixed(1).replace('.0', '')}%</span>
+        </div>
+      `).join('')}
+    </div>
+    ${hasCompare ? `
+      <div class="legend-group">
+        <div class="legend-group-title">Aussenring · ${compareTitle}</div>
+        ${compareRows.map((row, index) => `
+          <div class="legend-item muted">
+            <span class="legend-dot" style="background:${COMPARE_COLORS[index % COMPARE_COLORS.length]}"></span>
+            <span class="legend-label">${row.name}</span>
+            <span class="legend-value">${Number(row.value).toFixed(1).replace('.0', '')}%</span>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+  `;
 }
 
 function renderMiniPie(id, title, rows) {
@@ -393,7 +431,7 @@ function renderTargetTable() {
         <div class="editable-cell editable-percent">
           <input
             id="target-percent-${index}"
-            class="cell-input"
+            class="cell-input percent-input"
             type="number"
             min="0"
             max="100"
@@ -409,7 +447,7 @@ function renderTargetTable() {
         <label class="sr-only" for="target-corridor-${index}">Zielkorridor ${row.rooms}</label>
         <input
           id="target-corridor-${index}"
-          class="cell-input corridor-input"
+          class="cell-input corridor-input emphasis-input"
           type="text"
           value="${row.corridor}"
           data-field="corridor"
@@ -466,54 +504,72 @@ function renderCityTables() {
 
 function renderHistory() {
   if (!state.cityData) return;
-  const roomSeries = state.cityData.roomHistoryRows.find((entry) => entry.label === state.historyRoom)?.series || [];
-  const rows = [...roomSeries].sort((a, b) => a.year - b.year);
-  const recent = rows.slice(-8);
-  const values = rows.map((row) => row.count);
+
+  const allYears = state.cityData.roomHistoryRows[0]?.series.map((row) => row.year) || [];
+  const filteredYears = allYears.filter((year) => year >= state.historyStartYear && year <= state.historyEndYear);
+  const roomSets = state.cityData.roomHistoryRows.map((entry, roomIndex) => ({
+    label: entry.label,
+    color: COLORS[roomIndex % COLORS.length],
+    series: entry.series.filter((row) => row.year >= state.historyStartYear && row.year <= state.historyEndYear)
+  }));
+  const values = roomSets.flatMap((entry) => entry.series.map((row) => row.count));
   const min = Math.min(...values);
   const max = Math.max(...values);
   const width = 760;
-  const height = 250;
-  const padding = 34;
-  const points = rows.map((row, index) => {
-    const x = padding + (index / Math.max(rows.length - 1, 1)) * (width - padding * 2);
-    const y = height - padding - ((row.count - min) / Math.max(max - min, 1)) * (height - padding * 2);
-    return { ...row, x, y };
-  });
+  const height = 320;
+  const padding = 42;
+  const roomLines = roomSets.map((entry) => ({
+    ...entry,
+    points: entry.series.map((row, index) => {
+      const x = padding + (index / Math.max(entry.series.length - 1, 1)) * (width - padding * 2);
+      const y = height - padding - ((row.count - min) / Math.max(max - min, 1)) * (height - padding * 2);
+      return { ...row, x, y };
+    })
+  }));
+
+  document.getElementById('historyRangeLabel').textContent = `${state.historyStartYear}–${state.historyEndYear}`;
 
   document.getElementById('historyChart').innerHTML = `
+    <div class="history-inline-legend">
+      ${roomLines.map((entry) => `
+        <span class="history-inline-item">
+          <span class="legend-dot" style="background:${entry.color}"></span>
+          ${entry.label}
+        </span>
+      `).join('')}
+    </div>
     <svg viewBox="0 0 ${width} ${height}" aria-hidden="true">
-      <polyline
-        points="${points.map((point) => `${point.x},${point.y}`).join(' ')}"
-        fill="none"
-        stroke="#007aff"
-        stroke-width="4"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
       <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#e5e5ea" />
       <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#e5e5ea" />
-      ${points.map((point) => `
-        <circle cx="${point.x}" cy="${point.y}" r="3.5" fill="#007aff">
-          <title>${point.year}: ${point.count.toLocaleString('de-CH')}</title>
-        </circle>
+      ${roomLines.map((entry) => `
+        <polyline
+          points="${entry.points.map((point) => `${point.x},${point.y}`).join(' ')}"
+          fill="none"
+          stroke="${entry.color}"
+          stroke-width="3.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        ${entry.points.map((point) => `
+          <circle cx="${point.x}" cy="${point.y}" r="2.8" fill="${entry.color}">
+            <title>${entry.label} ${point.year}: ${point.count.toLocaleString('de-CH')}</title>
+          </circle>
+        `).join('')}
       `).join('')}
-      <text x="${padding}" y="22" class="svg-label">${rows[0]?.year || ''}</text>
-      <text x="${width - padding}" y="22" text-anchor="end" class="svg-label">${rows[rows.length - 1]?.year || ''}</text>
+      <text x="${padding}" y="22" class="svg-label">${filteredYears[0] || ''}</text>
+      <text x="${width - padding}" y="22" text-anchor="end" class="svg-label">${filteredYears[filteredYears.length - 1] || ''}</text>
     </svg>
   `;
 
-  document.querySelector('#historyTable tbody').innerHTML = recent.reverse().map((row) => {
-    const previous = rows.find((entry) => entry.year === row.year - 1);
-    const diff = previous ? row.count - previous.count : null;
-    return `
-      <tr>
-        <td>${row.year}</td>
-        <td>${row.count.toLocaleString('de-CH')}</td>
-        <td>${diff === null ? '–' : `${diff > 0 ? '+' : ''}${diff.toLocaleString('de-CH')}`}</td>
-      </tr>
-    `;
-  }).join('');
+  document.querySelector('#historyTable tbody').innerHTML = [...filteredYears].reverse().map((year) => `
+    <tr>
+      <td>${year}</td>
+      ${roomSets.map((entry) => {
+        const hit = entry.series.find((row) => row.year === year);
+        return `<td>${hit ? hit.count.toLocaleString('de-CH') : '–'}</td>`;
+      }).join('')}
+    </tr>
+  `).join('');
 }
 
 function renderAll() {
@@ -575,6 +631,14 @@ function handleTotalApartmentsInput(event) {
   markDirty();
 }
 
+function handleHistoryRangeInput() {
+  const start = Number(document.getElementById('historyStartRange').value);
+  const end = Number(document.getElementById('historyEndRange').value);
+  state.historyStartYear = Math.min(start, end);
+  state.historyEndYear = Math.max(start, end);
+  renderHistory();
+}
+
 async function init() {
   loadState();
 
@@ -590,12 +654,8 @@ async function init() {
     markDirty();
   });
 
-  document.getElementById('historyRoomSelect').addEventListener('change', (event) => {
-    state.historyRoom = event.target.value;
-    renderHistory();
-    markDirty();
-  });
-
+  document.getElementById('historyStartRange').addEventListener('input', handleHistoryRangeInput);
+  document.getElementById('historyEndRange').addEventListener('input', handleHistoryRangeInput);
   document.getElementById('totalApartments').addEventListener('input', handleTotalApartmentsInput);
   document.querySelector('#targetTable tbody').addEventListener('input', handleTargetTableInput);
   document.getElementById('saveTargetRows').addEventListener('click', saveState);
